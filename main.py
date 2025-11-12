@@ -1,10 +1,16 @@
+import shlex
 from repositories.contact_repository import ContactRepository
 from handlers.command_handler import CommandHandler
 
 
 def parse_command(user_input: str):
-    """Parse user input into command and arguments"""
-    parts = user_input.strip().split()
+    """Parse user input into command and arguments, handling quoted strings"""
+    try:
+        parts = shlex.split(user_input.strip())
+    except ValueError:
+        # Fallback to simple split if shlex fails
+        parts = user_input.strip().split()
+
     if not parts:
         return "", []
     command = parts[0].lower()
