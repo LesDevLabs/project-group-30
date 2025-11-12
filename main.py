@@ -1,5 +1,5 @@
 from repositories.contact_repository import ContactRepository
-from services.contact_service import ContactService
+from handlers.command_handler import CommandHandler
 
 
 def parse_command(user_input: str):
@@ -14,10 +14,11 @@ def parse_command(user_input: str):
 
 def main():
     repository = ContactRepository()
-    contact_service = ContactService(repository)
+    contact_service = CommandHandler(repository)
 
     print("Welcome to the Contact Book!")
-    print("Commands: add, show, all, delete, exit")
+    print("Commands: add, show, all, change, rename, "
+          "delete, delete-phone, exit")
     example = ("Example: add John 1234567890 "
                "john@example.com '123 Main St' 01.01.1990")
     print(example)
@@ -47,13 +48,30 @@ def main():
             print(contact_service.show_contact(args[0]))
         elif command == "all":
             print(contact_service.show_all_contacts())
+        elif command == "change":
+            if len(args) < 3:
+                print("Error: Please provide contact name, "
+                      "old phone, and new phone.")
+                continue
+            print(contact_service.change(args[0], args[1], args[2]))
+        elif command == "rename":
+            if len(args) < 2:
+                print("Error: Please provide old name and new name.")
+                continue
+            print(contact_service.edit_name(args[0], args[1]))
         elif command == "delete":
             if len(args) < 1:
                 print("Error: Please provide a contact name.")
                 continue
             print(contact_service.delete_contact(args[0]))
+        elif command == "delete-phone":
+            if len(args) < 2:
+                print("Error: Please provide contact name and phone number.")
+                continue
+            print(contact_service.delete_phone(args[0], args[1]))
         else:
-            print("Invalid command. Use: add, show, all, delete, exit")
+            print("Invalid command. Use: add, show, all, change, "
+                  "rename, delete, delete-phone, exit")
 
 
 if __name__ == "__main__":
