@@ -9,9 +9,7 @@ class CommandHandler:
             "change": self.change,
             "rename": self.edit_name,
             "delete": self.delete_contact,
-            "remove": self.delete_contact,
             "delete-phone": self.delete_phone,
-            "remove-phone": self.delete_phone,
         }
 
     @input_error
