@@ -4,37 +4,36 @@ import difflib
 class SearchService:
 
     def exact_search(self, contacts, query):
-        """Exact/substring search"""
         query = query.lower()
         results = []
 
         for record in contacts.values():
-            fields_to_search = self.collect_fields(record)
-            combined = " ".join(fields_to_search)
-
+            fields = self.collect_fields(record)
+            combined = " ".join(fields)
             if query in combined:
                 results.append(record)
 
         return results
 
-    def fuzzy_search(self, contacts, query, limit=3):
-        """Fuzzy search if exact match fails"""
+    def fuzzy_search(self, contacts, query, limit=5):
         query = query.lower()
         scored = []
 
         for record in contacts.values():
-            fields_to_search = self.collect_fields(record)
-            combined = " ".join(fields_to_search)
+            fields = self.collect_fields(record)
 
-            score = difflib.SequenceMatcher(None, query, combined).ratio()
-            scored.append((score, record))
+            best_score = 0
+            for field in fields:
+                score = difflib.SequenceMatcher(None, query, field).ratio()
+                if score > best_score:
+                    best_score = score
+
+            scored.append((best_score, record))
 
         scored.sort(key=lambda x: x[0], reverse=True)
-
         return [record for score, record in scored if score >= 0.3][:limit]
 
     def collect_fields(self, record):
-        """Collect name, phones, email, address, birthday as lowercase strings"""
         fields = []
 
         if getattr(record, "name", None):
