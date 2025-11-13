@@ -1,83 +1,71 @@
-import shlex
 from repositories.contact_repository import ContactRepository
 from handlers.command_handler import CommandHandler
-
-
-def parse_command(user_input: str):
-    """Parse user input into command and arguments, handling quoted strings"""
-    try:
-        parts = shlex.split(user_input.strip())
-    except ValueError:
-        # Fallback to simple split if shlex fails
-        parts = user_input.strip().split()
-
-    if not parts:
-        return "", []
-    command = parts[0].lower()
-    args = parts[1:]
-    return command, args
+from cli.command_router import CommandRouter
+from cli.presenter import Presenter
 
 
 def main():
+    """Main entry point for Personal Assistant CLI"""
+    # Initialize repositories and handlers
     repository = ContactRepository()
-    contact_service = CommandHandler(repository)
+    command_handler = CommandHandler(repository)
 
-    print("Welcome to the Contact Book!")
-    print("Commands: add, show, all, change, rename, "
-          "delete, delete-phone, exit")
-    example = ("Example: add John 1234567890 "
-               "john@example.com '123 Main St' 01.01.1990")
-    print(example)
+    # Initialize CLI components
+    router = CommandRouter(command_handler)
 
+    # Display welcome message
+    Presenter.print_welcome()
+
+    # Main loop
     while True:
-        user_input = input("\nEnter a command: ")
-        command, args = parse_command(user_input)
+        try:
+            # Get user input with colored prompt
+            user_input = input(Presenter.print_prompt())
 
-        if command in ["exit", "close", "quit"]:
-            print("Goodbye!")
+            # Route command
+            should_continue, result = router.route(user_input)
+
+            # Display result if any
+            if result:
+                # Handle special formatting for contact lists
+                if "Found" in result and "contacts:" in result:
+                    # Multiple contacts found from search
+                    lines = result.split('\n')
+                    print(Presenter.info(lines[0]))  # "Found X contacts:"
+                    for contact_line in lines[1:]:
+                        if contact_line.strip():  # Skip empty lines
+                            Presenter.print_contact(contact_line)
+                elif ("No contacts stored" in result or
+                      "No contacts found" in result):
+                    print(Presenter.info(result))
+                elif "Contact name:" in result:
+                    # Single contact display
+                    Presenter.print_contact(result)
+                elif result.count('\n') > 0 and "Contact name:" in result:
+                    # Multiple contacts (from 'all' command)
+                    contacts = result.split('\n')
+                    for contact in contacts:
+                        if contact.strip():  # Skip empty lines
+                            Presenter.print_contact(contact)
+                else:
+                    # Regular message (already formatted by router)
+                    print(result)
+
+            # Check if should exit
+            if not should_continue:
+                break
+
+        except KeyboardInterrupt:
+            # Handle Ctrl+C gracefully
+            print("\n" + Presenter.info("Goodbye!"))
             break
-        elif command == "add":
-            if len(args) < 1:
-                print("Error: Please provide at least a name.")
-                continue
-            name = args[0]
-            phone = args[1] if len(args) > 1 else None
-            email = args[2] if len(args) > 2 else None
-            address = args[3] if len(args) > 3 else None
-            birthday = args[4] if len(args) > 4 else None
-            print(contact_service.add_contact(name, phone, email,
-                                              address, birthday))
-        elif command == "show":
-            if len(args) < 1:
-                print("Error: Please provide a contact name.")
-                continue
-            print(contact_service.show_contact(args[0]))
-        elif command == "all":
-            print(contact_service.show_all_contacts())
-        elif command == "change":
-            if len(args) < 3:
-                print("Error: Please provide contact name, "
-                      "old phone, and new phone.")
-                continue
-            print(contact_service.change(args[0], args[1], args[2]))
-        elif command == "rename":
-            if len(args) < 2:
-                print("Error: Please provide old name and new name.")
-                continue
-            print(contact_service.edit_name(args[0], args[1]))
-        elif command == "delete":
-            if len(args) < 1:
-                print("Error: Please provide a contact name.")
-                continue
-            print(contact_service.delete_contact(args[0]))
-        elif command == "delete-phone":
-            if len(args) < 2:
-                print("Error: Please provide contact name and phone number.")
-                continue
-            print(contact_service.delete_phone(args[0], args[1]))
-        else:
-            print("Invalid command. Use: add, show, all, change, "
-                  "rename, delete, delete-phone, exit")
+        except EOFError:
+            # Handle Ctrl+D gracefully
+            print("\n" + Presenter.info("Goodbye!"))
+            break
+        except Exception as e:
+            # Handle unexpected errors
+            print(Presenter.error(f"Unexpected error: {str(e)}"))
 
 
 if __name__ == "__main__":

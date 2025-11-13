@@ -103,3 +103,17 @@ class CommandHandler:
 
         record.remove_phone(phone)
         return f"Phone {phone} removed from contact {name}."
+
+    @input_error
+    def search_contacts(self, query: str) -> str:
+        """Search contacts by name, phone, or email"""
+        results = self.repository.search_contacts(query)
+        if not results:
+            return f"No contacts found matching '{query}'."
+
+        if len(results) == 1:
+            return str(results[0])
+
+        result_lines = [f"Found {len(results)} contacts:"]
+        result_lines.extend(str(contact) for contact in results)
+        return "\n".join(result_lines)

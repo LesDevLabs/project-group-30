@@ -1,5 +1,7 @@
 from models.contact import Record
 
+from models.contact import Record
+
 
 class ContactRepository:
     def __init__(self):
@@ -27,3 +29,36 @@ class ContactRepository:
     def has_contact(self, name: str) -> bool:
         """Check if contact exists"""
         return name in self.contacts
+    
+    def search_contacts(self, query: str) -> list:
+        """
+        Search contacts by name, phone, or email
+        
+        Args:
+            query: Search query string
+            
+        Returns:
+            List of matching Record objects
+        """
+        query_lower = query.lower()
+        results = []
+        
+        for contact in self.contacts.values():
+            # Search by name
+            if query_lower in contact.name.value.lower():
+                results.append(contact)
+                continue
+            
+            # Search by phone
+            for phone in contact.phones:
+                if query_lower in phone.value.lower():
+                    results.append(contact)
+                    break
+            
+            # Search by email
+            for email in contact.emails:
+                if query_lower in email.value.lower():
+                    results.append(contact)
+                    break
+        
+        return results
