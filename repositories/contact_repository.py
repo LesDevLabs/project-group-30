@@ -1,5 +1,7 @@
 from models.contact import Record
 
+from models.contact import Record
+
 
 class ContactRepository:
     def __init__(self):

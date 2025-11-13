@@ -1,8 +1,15 @@
 from models.field import Field
+from datetime import datetime
 
 
 class Birthday(Field):
-    # which formats we support? todo ask mentor
+    # DD.MM.YYYY format
     def __init__(self, value):
-        pass
+        try:
+            self.value = datetime.strptime(value, "%d.%m.%Y")
+        except ValueError:
+            raise ValueError("Invalid date format. Use DD.MM.YYYY")
+        
+    def __str__(self):
+        return self.value.strftime("%d.%m.%Y")
 

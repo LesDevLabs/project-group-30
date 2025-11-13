@@ -1,11 +1,14 @@
-
+from models.contact import Record
 from handlers.decorators import input_error
 
 
 class CommandHandler:
-    def __init__(self, address_book):
-        self.book = address_book
+    def __init__(self, repository):
+        self.repository = repository
         self.commands = {
+            "add": self.add_contact,
+            "show": self.show_contact,
+            "all": self.show_all_contacts,
             "change": self.change,
             "rename": self.edit_name,
             "delete": self.delete_contact,
@@ -13,65 +16,90 @@ class CommandHandler:
         }
 
     @input_error
-    def change(self, args: list[str]) -> str:
-        if len(args) < 3:
-            return "Error: Please provide contact name, old phone, and new phone."
+    def add_contact(self, name: str, phone: str = None,
+                    email: str = None, address: str = None,
+                    birthday: str = None):
+        """Add or update a contact"""
+        contact = self.repository.find_contact(name)
+        if contact is None:
+            contact = Record(name)
+            self.repository.add_contact(contact)
+            message = "Contact added."
+        else:
+            message = "Contact updated."
 
-        name, old_phone, new_phone = args
-        record = self.book.find(name)
-        record.edit_phone(old_phone, new_phone)
+        if phone:
+            contact.add_phone(phone)
+        if email:
+            contact.add_email(email)
+        if address:
+            contact.set_address(address)
+        if birthday:
+            contact.set_birthday(birthday)
 
-        return f"Phone number for {name} changed from {old_phone} to {new_phone}."
+        return message
 
     @input_error
-    def edit_name(self, args: list[str]) -> str:
-        if len(args) < 2:
-            return "Error: Please provide old name and new name."
+    def show_contact(self, name: str):
+        """Show a specific contact"""
+        contact = self.repository.find_contact(name)
+        if contact is None:
+            raise KeyError(f"Contact {name} not found.")
+        return str(contact)
 
-        old_name, new_name = args
-        record = self.book.find(old_name)
+    @input_error
+    def show_all_contacts(self):
+        """Show all contacts"""
+        contacts = self.repository.get_all_contacts()
+        if not contacts:
+            return "No contacts stored."
+        return "\n".join(str(contact) for contact in contacts)
 
+    @input_error
+    def change(self, name: str, old_phone: str, new_phone: str) -> str:
+        """Change a phone number for a contact"""
+        record = self.repository.find_contact(name)
+        if record is None:
+            raise KeyError(f"Contact {name} not found.")
+        record.edit_phone(old_phone, new_phone)
+        return (f"Phone number for {name} changed from "
+                f"{old_phone} to {new_phone}.")
+
+    @input_error
+    def edit_name(self, old_name: str, new_name: str) -> str:
+        """Rename a contact"""
+        record = self.repository.find_contact(old_name)
         if not record:
-            return f"Contact {old_name} not found."
+            raise KeyError(f"Contact {old_name} not found.")
 
-        if self.book.find(new_name):
-            return f"Contact {new_name} already exists."
+        if self.repository.find_contact(new_name):
+            raise ValueError(f"Contact {new_name} already exists.")
 
-        self.book.delete(old_name)
+        self.repository.delete_contact(old_name)
         record.name.value = new_name
-        self.book.add_record(record)
+        self.repository.add_contact(record)
 
         return f"Contact name changed from {old_name} to {new_name}."
 
-
     @input_error
-    def delete_contact(self, args: list[str]) -> str:
-        if len(args) < 1:
-            return "Error: Please provide contact name."
-
-        name = args[0]
-        record = self.book.find(name)
-
-        if not record:
-            return f"Contact {name} not found."
-
-        self.book.delete(name)
+    def delete_contact(self, name: str):
+        """Delete a contact"""
+        record = self.repository.find_contact(name)
+        if record is None:
+            raise KeyError(f"Contact {name} not found.")
+        self.repository.delete_contact(name)
         return f"Contact {name} deleted successfully."
 
     @input_error
-    def delete_phone(self, args: list[str]) -> str:
-        if len(args) < 2:
-            return "Error: Please provide contact name and phone number."
-
-        name, phone = args
-        record = self.book.find(name)
-
+    def delete_phone(self, name: str, phone: str) -> str:
+        """Delete a phone number from a contact"""
+        record = self.repository.find_contact(name)
         if not record:
-            return f"Contact {name} not found."
+            raise KeyError(f"Contact {name} not found.")
 
         phone_obj = record.find_phone(phone)
         if not phone_obj:
-            return f"Phone {phone} not found for contact {name}."
+            raise ValueError(f"Phone {phone} not found for contact {name}.")
 
         record.remove_phone(phone)
         return f"Phone {phone} removed from contact {name}."
