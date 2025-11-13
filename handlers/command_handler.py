@@ -13,6 +13,7 @@ class CommandHandler:
             "rename": self.edit_name,
             "delete": self.delete_contact,
             "delete-phone": self.delete_phone,
+            "find" : self.search_contacts
         }
 
     @input_error
@@ -106,14 +107,24 @@ class CommandHandler:
 
     @input_error
     def search_contacts(self, query: str) -> str:
-        """Search contacts by name, phone, or email"""
-        results = self.repository.search_contacts(query)
-        if not results:
-            return f"No contacts found matching '{query}'."
+        exact_results = self.repository.search_contacts(query)
 
-        if len(results) == 1:
-            return str(results[0])
+        if exact_results:
+            if len(exact_results) == 1:
+                return str(exact_results[0])
 
-        result_lines = [f"Found {len(results)} contacts:"]
-        result_lines.extend(str(contact) for contact in results)
-        return "\n".join(result_lines)
+            lines = [f"Found {len(exact_results)} contacts:"]
+            lines.extend(str(contact) for contact in exact_results)
+            return "\n".join(lines)
+
+        closest = self.repository.search_closest_contacts(query)
+
+        if closest:
+            lines = [
+                f"No exact matches for '{query}':",
+                "Most similar contacts:"
+             ]
+            lines.extend(str(contact) for contact in closest)
+            return "\n".join(lines)
+
+        return f"No contacts found matching '{query}'."
