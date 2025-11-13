@@ -31,8 +31,15 @@ class SearchService:
             scored.append((best_score, record))
 
         scored.sort(key=lambda x: x[0], reverse=True)
-        return [record for score, record in scored if score >= 0.3][:limit]
 
+        if not scored:
+            return []
+
+        best_score, best_record = scored[0]
+        if best_score < 0.3:
+            return []
+
+        return [best_record]
     def collect_fields(self, record):
         fields = []
 
