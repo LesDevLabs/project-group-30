@@ -1,5 +1,5 @@
 import re
-from errors.errors import ValidationError
+from handlers.errors import ValidationError
 from models.field import Field
 
 

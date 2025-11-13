@@ -1,4 +1,4 @@
-from errors.errors import ValidationError
+from handlers.errors import ValidationError
 
 
 def input_error(func):
