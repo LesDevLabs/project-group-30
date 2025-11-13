@@ -33,7 +33,7 @@ class ContactRepository:
         return name in self.contacts
     
     def search_contacts(self, query: str):
-    return self.search_service.exact_search(self.contacts, query)
+        return self.search_service.exact_search(self.contacts, query)
 
 
     def search_closest_contacts(self, query: str):
