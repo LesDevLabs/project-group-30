@@ -13,7 +13,7 @@ class CommandHandler:
             "rename": self.edit_name,
             "delete": self.delete_contact,
             "delete-phone": self.delete_phone,
-            "find" : self.search_contacts,
+            "search-contact" : self.search_contacts,
             "help": self._handle_help
         }
 
