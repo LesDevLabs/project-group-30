@@ -1,11 +1,13 @@
 from models.contact import Record
 
 from models.contact import Record
+from search.search_service import SearchService
 
 
 class ContactRepository:
     def __init__(self):
         self.contacts = {}
+        self.search_service = SearchService()
 
     def add_contact(self, record: Record):
         """Add a new contact or update existing one"""
@@ -30,35 +32,11 @@ class ContactRepository:
         """Check if contact exists"""
         return name in self.contacts
     
-    def search_contacts(self, query: str) -> list:
-        """
-        Search contacts by name, phone, or email
-        
-        Args:
-            query: Search query string
-            
-        Returns:
-            List of matching Record objects
-        """
-        query_lower = query.lower()
-        results = []
-        
-        for contact in self.contacts.values():
-            # Search by name
-            if query_lower in contact.name.value.lower():
-                results.append(contact)
-                continue
-            
-            # Search by phone
-            for phone in contact.phones:
-                if query_lower in phone.value.lower():
-                    results.append(contact)
-                    break
-            
-            # Search by email
-            for email in contact.emails:
-                if query_lower in email.value.lower():
-                    results.append(contact)
-                    break
-        
-        return results
+    def search_contacts(self, query: str):
+    return self.search_service.exact_search(self.contacts, query)
+
+
+    def search_closest_contacts(self, query: str):
+        return self.search_service.fuzzy_search(self.contacts, query)
+
+
