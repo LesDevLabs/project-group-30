@@ -1,6 +1,6 @@
 import re
-
 from errors import ValidationError
+
 
 def normalize_phone(phone_number: str):
     if (not bool(phone_number.strip())):

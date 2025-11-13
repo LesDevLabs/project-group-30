@@ -7,7 +7,6 @@ class Phone(Field):
     def __init__(self, value):
         super().__init__(value)
 
-
     @Field.value.setter
     def value(self, phone: str):
         formatted_phone = normalize_phone(phone)

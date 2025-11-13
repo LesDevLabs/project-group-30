@@ -7,7 +7,6 @@ class Email(Field):
     def __init__(self, value):
         super().__init__(value)
 
-
     @Field.value.setter
     def value(self, email: str):
         email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
@@ -19,7 +18,3 @@ class Email(Field):
             raise ValidationError('email', 'Email is not valid')
 
         self._value = email
-
-    
-    
-    
