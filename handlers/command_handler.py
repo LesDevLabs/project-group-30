@@ -21,23 +21,38 @@ class CommandHandler:
         return self.commands.get(key)
 
     @input_error
-    def add_contact(self, name: str, phone: str = None,
-                    email: str = None, address: str = None,
-                    birthday: str = None):
-        """Add or update a contact"""
+    def add_contact(self):
+        print("Let's create a new contact. Name is required. Other fields are optional")
+        print("Press Enter to skip any optional field.\n")
+        while True:
+            name = input("Name(required): ").strip()
+            if not name:
+                print("Name is required. Please enter a name.\n")
+                continue
+            break
+
         contact = self.repository.find_contact(name)
+        
         if contact is None:
             contact = Record(name)
             self.repository.add_contact(contact)
         else:
-            return "Contact alreade exist"
+            return "Contact alreade exist, please use update to modify"
 
+        
+        phone = input("Phone (optional): ").strip() or None
         if phone:
             contact.add_phone(phone)
+        
+        email = input("Email (optional): ").strip() or None
         if email:
             contact.add_email(email)
+        
+        address = input("Address (optional): ").strip() or None
         if address:
             contact.set_address(address)
+        
+        birthday = input("Birthday (optional, dd.mm.yyyy): ").strip() or None
         if birthday:
             contact.set_birthday(birthday)
 
@@ -66,8 +81,7 @@ class CommandHandler:
         if record is None:
             raise KeyError(f"Contact {name} not found.")
         record.edit_phone(old_phone, new_phone)
-        return (f"Phone number for {name} changed from "
-                f"{old_phone} to {new_phone}.")
+        return f"Phone number for {name} changed from {old_phone} to {new_phone}."
 
     @input_error
     def edit_name(self, old_name: str, new_name: str) -> str:

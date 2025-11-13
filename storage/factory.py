@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from interface import StorageInterface
+from storage.storage_interface import StorageInterface
 from json_storage import JSONStorage
 from pickle_storage import PickleStorage
 

@@ -1,7 +1,7 @@
 import pickle
 
-from decorators import handle_load_errors, handle_save_errors
-from interface import StorageInterface
+from storage.storage_error_decorators import handle_load_errors, handle_save_errors
+from storage.storage_interface import StorageInterface
 
 
 class PickleStorage(StorageInterface):
