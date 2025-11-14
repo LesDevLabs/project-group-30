@@ -1,5 +1,5 @@
 import re
-from errors import ValidationError
+from handlers.errors import ValidationError
 
 
 def normalize_phone(phone_number: str):
@@ -14,3 +14,8 @@ def normalize_phone(phone_number: str):
         return f'{cleaned_phone_number}'
     else:
         return f'38{cleaned_phone_number}'
+
+def parse_user_input_data(user_input):
+        cmd, *args = user_input.split()
+        cmd = cmd.strip().lower()
+        return cmd, *args

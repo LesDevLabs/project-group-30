@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
-from interface import StorageInterface
-from decorators import handle_save_errors, handle_load_errors
+from storage.storage_interface import StorageInterface
+from storage.storage_error_decorators import handle_save_errors, handle_load_errors
 
 
 class DateTimeEncoder(json.JSONEncoder):
