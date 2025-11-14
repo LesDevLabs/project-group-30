@@ -1,10 +1,12 @@
 from cli.presenter import Presenter
 from models.contact import Record
 from handlers.decorators import input_error
+from Note import Note
 
 class CommandHandler:
-    def __init__(self, repository):
+    def __init__(self, repository, note_repo):
         self.repository = repository
+        self.note_repo = note_repo
         self.commands = {
             "add": self.add_contact,
             "show": self.show_contact,
@@ -14,11 +16,35 @@ class CommandHandler:
             "delete": self.delete_contact,
             "delete-phone": self.delete_phone,
             "search-contact" : self.search_contacts,
+            "n-add" : self.note_add,
+            "n-all" : self.note_list,
             "help": self._handle_help
         }
 
     def __getitem__(self, key):
         return self.commands.get(key)
+
+    @input_error
+    def note_list(self):
+        self.note_repo.list_note()
+        
+    @input_error
+    def note_add(self):
+        print("Let's create a new note. Text is required. Tags are optional.")
+        print("Press Enter to skip tags.\n")
+        while True:
+            text = input("Text(required): ").strip()
+            if not text:
+                print("Text is required. Please enter a text.\n")
+                continue
+            break
+        
+        note = Note(text)
+
+        note = self.note_repo.add_note(note)
+        return "Note added."
+
+
 
     @input_error
     def add_contact(self):

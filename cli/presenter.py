@@ -156,6 +156,7 @@ class Presenter:
   {Fore.GREEN}rename{Style.RESET_ALL}       - Rename a contact
   {Fore.GREEN}delete{Style.RESET_ALL}       - Delete a contact
   {Fore.GREEN}delete-phone{Style.RESET_ALL} - Delete a phone number
+  {Fore.GREEN}note-add{Style.RESET_ALL}     - Add note
   {Fore.GREEN}help{Style.RESET_ALL}         - Show help
   {Fore.GREEN}exit{Style.RESET_ALL}         - Exit application
 
