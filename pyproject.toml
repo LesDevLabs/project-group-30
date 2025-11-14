@@ -24,6 +24,7 @@ classifiers = [
 dependencies = [
     "colorama",
     "rich",
+    "prompt_toolkit",
 ]
 
 [project.urls]

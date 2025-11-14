@@ -16,7 +16,7 @@ setup(
         "License :: OSI Approved :: MIT License",
     ],
     python_requires=">=3.8",
-    install_requires=["colorama", "rich"],
+    install_requires=["colorama", "rich", "prompt_toolkit"],
     entry_points={
         "console_scripts": [
             "assistant-bot-G30=main:main",
