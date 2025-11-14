@@ -2,11 +2,14 @@ from cli.presenter import Presenter
 from models.contact import Record
 from models.note import Note
 from handlers.decorators import input_error
+from handlers.birthday_service import BirthdayService
+
 
 class CommandHandler:
     def __init__(self, repository, note_repo):
         self.repository = repository
         self.note_repo = note_repo
+        self.birthday_service = BirthdayService(repository)
         self.commands = {
             "add": self.add_contact,
             "show": self.show_contact,
@@ -15,11 +18,12 @@ class CommandHandler:
             "rename": self.edit_name,
             "delete": self.delete_contact,
             "delete-phone": self.delete_phone,
-            "search-contact" : self.search_contacts,
             "n-add" : self.note_add,
             "n-del" : self.note_del,
             "n-list": self.note_list,
             "n-edit": self.note_edit,
+            "search-contact": self.search_contacts,
+            "birthdays": self.show_birthdays,
             "help": self._handle_help
         }
 
@@ -73,7 +77,10 @@ class CommandHandler:
 
     @input_error
     def add_contact(self):
-        print("Let's create a new contact. Name is required. Other fields are optional")
+        print(
+            "Let's create a new contact. "
+            "Name is required. Other fields are optional"
+        )
         print("Press Enter to skip any optional field.\n")
         while True:
             name = input("Name(required): ").strip()
@@ -83,7 +90,7 @@ class CommandHandler:
             break
 
         contact = self.repository.find_contact(name)
-        
+
         if contact is None:
             contact = Record(name)
             self.repository.add_contact(contact)
@@ -101,7 +108,7 @@ class CommandHandler:
             except Exception as e:
                 print(f"Error: {e}. Please try again or press Enter to skip.")
                 continue
-        
+
         # Обработка email с повторным вводом при ошибке
         while True:
             email = input("Email (optional): ").strip()
@@ -113,11 +120,11 @@ class CommandHandler:
             except Exception as e:
                 print(f"Error: {e}. Please try again or press Enter to skip.")
                 continue
-        
+
         address = input("Address (optional): ").strip() or None
         if address:
             contact.set_address(address)
-        
+
         # Обработка дня рождения с повторным вводом при ошибке
         while True:
             birthday = input("Birthday (optional, dd.mm.yyyy): ").strip()
@@ -181,7 +188,9 @@ class CommandHandler:
             break
 
         if self.repository.find_contact(new_name):
-            raise ValueError(f"Contact {new_name} already exists.")
+            raise ValueError(
+                f"Contact {new_name} already exists."
+            )
 
         self.repository.delete_contact(name)
         contact.name.value = new_name
@@ -249,14 +258,48 @@ class CommandHandler:
             return "\n".join(lines)
 
         return f"No contacts found matching '{query}'."
-    
+
+    @input_error
+    def show_birthdays(self, days: str) -> str:
+        """Show contacts with birthdays within specified number of days"""
+        try:
+            days_int = int(days)
+        except ValueError:
+            raise ValueError(
+                f"Invalid number of days: {days}. "
+                "Please provide a valid integer."
+            )
+
+        results = self.birthday_service.find_near(days_int)
+
+        if not results:
+            return (
+                f"No contacts have birthdays in the next {days_int} days."
+            )
+
+        lines = [
+            f"Contacts with birthdays in the next {days_int} days:"
+        ]
+        for result in results:
+            contact_info = f"  {result['name']}"
+            if result['phone']:
+                contact_info += f" - Phone: {result['phone']}"
+            if result['email']:
+                contact_info += f" - Email: {result['email']}"
+            contact_info += (
+                f" - Birthday: {result['date']} ({result['weekday']})"
+            )
+            lines.append(contact_info)
+
+        return "\n".join(lines)
 
     def _handle_help(self):
         header = Presenter.header("Available Commands:")
 
+        add_info = 'add <name> [phone] [email] [address] [birthday]'
         add_cmd = (
-            f"  {Presenter.info('add <name> [phone] [email] [address] [birthday]')}\n"
-            f"    Add or update a contact\n"
+            f"  {Presenter.info(add_info)}\n"
+            "    Add or update a contact\n"
         )
 
         show_cmd = (
@@ -294,6 +337,12 @@ class CommandHandler:
             f"    Delete a phone number from a contact\n"
         )
 
+        birthdays_cmd = (
+            f"  {Presenter.info('birthdays <days>')}\n"
+            f"    Show contacts with birthdays within "
+            f"the specified number of days\n"
+        )
+
         system_header = f"{Presenter.highlight('System:')}\n"
 
         help_cmd = (
@@ -321,6 +370,7 @@ class CommandHandler:
             + rename_cmd
             + delete_cmd
             + delete_phone_cmd
+            + birthdays_cmd
             + system_header
             + help_cmd
             + exit_cmd
