@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assistant-bot-G30"
+version = "0.1.1"
+description = "Асистент-бот для управління контактами з підтримкою різних форматів збереження"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Valerian Demichev", email = "valerian.demichev@gmail.com"},
+    {name = "Koliaepov", email = "koliaepov@gmail.com"},
+    {name = "Lestyshchenko", email = "lestyshchenko@gmail.com"},
+    {name = "Sagepol", email = "sagepol@gmail.com"},
+    {name = "444ten", email = "444ten@gmail.com"},
+    {name = "Zarudenska", email = "3t.zarudenska@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "colorama",
+    "rich",
+]
+
+[project.urls]
+Homepage = "https://github.com/LesDevLabs/project-group-30"
+Repository = "https://github.com/LesDevLabs/project-group-30"
+
+[project.scripts]
+assistant-bot-G30 = "assistant_bot_g30.cli_entry:run"
