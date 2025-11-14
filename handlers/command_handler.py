@@ -181,11 +181,25 @@ class CommandHandler:
         
 
     @input_error
-    def delete_phone(self, name: str, phone: str) -> str:
+    def delete_phone(self) -> str:
         """Delete a phone number from a contact"""
+        print("Let's delete phone number from contact. Please enter contact name")
+        while True:
+            name = input("Name(required): ").strip()
+            if not name:
+                print("Name is required. Please enter a name.\n")
+                continue
+            break
         record = self.repository.find_contact(name)
         if not record:
             raise KeyError(f"Contact {name} not found.")
+
+        while True:
+            phone = input("Phone(required): ").strip()
+            if not phone:
+                print("Phone is required. Please enter a value.\n")
+                continue
+            break
 
         phone_obj = record.find_phone(phone)
         if not phone_obj:

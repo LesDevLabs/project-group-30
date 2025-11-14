@@ -38,14 +38,17 @@ def main():
             try:
                 # Get user input with autocomplete and history
                 user_input = prompt_manager.get_input("Enter command: ")
-                command, *args = parse_user_input_data(user_input)
-                if command in ["close", "exit", "quit"]:
-                    print("Good bye User!")
-                    break
-                if command_handler[command]:
-                    print(command_handler[command](*args))
+                if (user_input):
+                    command, *args = parse_user_input_data(user_input)
+                    if command in ["close", "exit", "quit"]:
+                        print("Good bye User!")
+                        break
+                    if command_handler[command]:
+                        print(command_handler[command](*args))
+                    else:
+                        print(command_suggester.get_suggestion_message(command))
                 else:
-                    print(command_suggester.get_suggestion_message(command))
+                    print('Please enter a command or use "help"')
 
             except KeyboardInterrupt:
                 # Handle Ctrl+C gracefully
