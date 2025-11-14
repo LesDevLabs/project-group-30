@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Python package init files
+__init__.py
+
 # C extensions
 *.so
 
