@@ -5,7 +5,6 @@ from cli.presenter import Presenter
 from cli.prompt_manager import PromptManager
 from handlers.command_handler import CommandHandler
 from repositories.contact_repository import ContactRepository
-from repositories.note_repository import NoteRepository
 from storage.factory import StorageFactory
 from utils.utils import parse_user_input_data
 
@@ -24,8 +23,7 @@ def main():
     if not isinstance(repository, ContactRepository):
         repository = ContactRepository()
 
-    note_repo = NoteRepository()
-    command_handler = CommandHandler(repository, note_repo)
+    command_handler = CommandHandler(repository)
     command_suggester = CommandSuggester()
     prompt_manager = PromptManager(commands=CommandSuggester.AVAILABLE_COMMANDS)
 
