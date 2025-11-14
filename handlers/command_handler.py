@@ -115,13 +115,290 @@ class CommandHandler:
         return "\n".join(str(contact) for contact in contacts)
 
     @input_error
-    def change(self, name: str, old_phone: str, new_phone: str) -> str:
-        """Change a phone number for a contact"""
-        record = self.repository.find_contact(name)
-        if record is None:
-            raise KeyError(f"Contact {name} not found.")
-        record.edit_phone(old_phone, new_phone)
-        return f"Phone number for {name} changed from {old_phone} to {new_phone}. /n"
+    def change(self) -> str:
+        """Change a contact field - displays interactive menu"""
+        while True:
+            self._display_change_menu()
+            choice = input("Enter your choice: ").strip()
+            
+            # Allow Enter to cancel
+            if not choice:
+                return "Return to main menu"
+            
+            if choice == "6":
+                return "Return to main menu"
+            
+            if choice not in ["1", "2", "3", "4", "5"]:
+                print(
+                    "Invalid choice. Please enter a number from 1 to 6.\n"
+                )
+                continue
+
+            # Get contact name
+            while True:
+                name = input(
+                    "Enter the EXISTING contact name to edit: "
+                ).strip()
+                # Allow Enter to cancel
+                if not name:
+                    return "Return to main menu"
+                break
+            
+            contact = self.repository.find_contact(name)
+            if contact is None:
+                raise KeyError(f"Contact {name} not found.")
+            
+            # Handle the selected option
+            result = None
+            if choice == "1":
+                result = self._change_name(contact, name)
+            elif choice == "2":
+                result = self._change_phone(contact, name)
+            elif choice == "3":
+                result = self._change_email(contact, name)
+            elif choice == "4":
+                result = self._change_address(contact, name)
+            elif choice == "5":
+                result = self._change_birthday(contact, name)
+            
+            # Check if user cancelled (returned None)
+            if result is None:
+                return "Return to main menu"
+            return result
+    
+    def _display_change_menu(self):
+        """Display the change menu options"""
+        print("\nChoose what you want to edit:\n")
+        print("1. Name")
+        print("2. Phone")
+        print("3. Email")
+        print("4. Address")
+        print("5. Birthday")
+        print("6. Return\n")
+    
+    @input_error
+    def _change_name(self, contact: Record, current_name: str) -> str:
+        """Handle name editing"""
+        print(f"\nCurrent contact name: {current_name}")
+        while True:
+            new_name = input("Enter the NEW name for this contact: ").strip()
+            # Allow Enter to cancel
+            if not new_name:
+                return None
+            break
+        
+        if self.repository.find_contact(new_name):
+            raise ValueError(f"Contact {new_name} already exists.")
+        
+        self.repository.delete_contact(current_name)
+        contact.name.value = new_name
+        self.repository.add_contact(contact)
+        
+        return f"Contact name changed from {current_name} to {new_name}."
+    
+    @input_error
+    def _change_phone(self, contact: Record, name: str) -> str:
+        """Handle phone editing"""
+        if not contact.phones:
+            print("This contact has no phone numbers.")
+            add_new = input(
+                "Would you like to add a new phone? (y/n): "
+            ).strip().lower()
+            # Allow Enter to cancel
+            if not add_new:
+                return None
+            if add_new == 'y':
+                while True:
+                    new_phone = input(
+                        "Enter new phone (format: +380XXXXXXXXX): "
+                    ).strip()
+                    # Allow Enter to cancel
+                    if not new_phone:
+                        return None
+                    try:
+                        contact.add_phone(new_phone)
+                        return f"Phone {new_phone} added to contact {name}."
+                    except Exception as e:
+                        print(f"Error: {e}. Please try again.")
+                        continue
+            else:
+                return "No changes made."
+        
+        # Display existing phones
+        print("\nExisting phone numbers:")
+        for idx, phone in enumerate(contact.phones, 1):
+            print(f"  {idx}. {phone.value}")
+        
+        # Get old phone selection
+        while True:
+            try:
+                selection = input(
+                    "\nEnter the number of the phone to edit "
+                    "(or enter the phone number directly): "
+                ).strip()
+                # Allow Enter to cancel
+                if not selection:
+                    return None
+                # Try to parse as index
+                try:
+                    idx = int(selection)
+                    if 1 <= idx <= len(contact.phones):
+                        old_phone = contact.phones[idx - 1].value
+                        break
+                    else:
+                        print(
+                            f"Invalid selection. Please enter a number "
+                            f"between 1 and {len(contact.phones)}."
+                        )
+                        continue
+                except ValueError:
+                    # Not a number, treat as phone value
+                    old_phone = selection
+                    if contact.find_phone(old_phone):
+                        break
+                    else:
+                        print(
+                            f"Phone {old_phone} not found. "
+                            "Please try again."
+                        )
+                        continue
+            except Exception as e:
+                print(f"Error: {e}. Please try again.")
+                continue
+
+        # Get new phone
+        while True:
+            new_phone = input(
+                "Enter new phone (format: +380XXXXXXXXX): "
+            ).strip()
+            # Allow Enter to cancel
+            if not new_phone:
+                return None
+            try:
+                contact.edit_phone(old_phone, new_phone)
+                return (
+                    f"Phone number for {name} changed from "
+                    f"{old_phone} to {new_phone}."
+                )
+            except Exception as e:
+                print(f"Error: {e}. Please try again.")
+                continue
+    
+    @input_error
+    def _change_email(self, contact: Record, name: str) -> str:
+        """Handle email editing"""
+        if not contact.emails:
+            print("This contact has no email addresses.")
+            add_new = input(
+                "Would you like to add a new email? (y/n): "
+            ).strip().lower()
+            # Allow Enter to cancel
+            if not add_new:
+                return None
+            if add_new == 'y':
+                while True:
+                    new_email = input("Enter new email: ").strip()
+                    # Allow Enter to cancel
+                    if not new_email:
+                        return None
+                    try:
+                        contact.add_email(new_email)
+                        return f"Email {new_email} added to contact {name}."
+                    except Exception as e:
+                        print(f"Error: {e}. Please try again.")
+                        continue
+            else:
+                return "No changes made."
+        
+        # Display existing emails
+        print("\nExisting email addresses:")
+        for idx, email in enumerate(contact.emails, 1):
+            print(f"  {idx}. {email.value}")
+        
+        # Get old email selection
+        while True:
+            try:
+                selection = input(
+                    "\nEnter the number of the email to edit "
+                    "(or enter the email address directly): "
+                ).strip()
+                # Allow Enter to cancel
+                if not selection:
+                    return None
+                # Try to parse as index
+                try:
+                    idx = int(selection)
+                    if 1 <= idx <= len(contact.emails):
+                        old_email = contact.emails[idx - 1].value
+                        break
+                    else:
+                        print(
+                            f"Invalid selection. Please enter a number "
+                            f"between 1 and {len(contact.emails)}."
+                        )
+                        continue
+                except ValueError:
+                    # Not a number, treat as email value
+                    old_email = selection
+                    if contact.find_email(old_email):
+                        break
+                    else:
+                        print(
+                            f"Email {old_email} not found. "
+                            "Please try again."
+                        )
+                        continue
+            except Exception as e:
+                print(f"Error: {e}. Please try again.")
+                continue
+
+        # Get new email
+        while True:
+            new_email = input("Enter new email: ").strip()
+            # Allow Enter to cancel
+            if not new_email:
+                return None
+            try:
+                contact.edit_email(old_email, new_email)
+                return (
+                    f"Email for {name} changed from "
+                    f"{old_email} to {new_email}."
+                )
+            except Exception as e:
+                print(f"Error: {e}. Please try again.")
+                continue
+    
+    @input_error
+    def _change_address(self, contact: Record, name: str) -> str:
+        """Handle address editing"""
+        if contact.address:
+            print(f"Current address: {contact.address.value}")
+        
+        new_address = input("Enter new address: ").strip()
+        # Allow Enter to cancel
+        if not new_address:
+            return None
+        contact.set_address(new_address)
+        return f"Address for {name} updated to: {new_address}."
+    
+    @input_error
+    def _change_birthday(self, contact: Record, name: str) -> str:
+        """Handle birthday editing"""
+        if contact.birthday:
+            print(f"Current birthday: {contact.birthday}")
+        
+        while True:
+            birthday = input("Enter new birthday (dd.mm.yyyy): ").strip()
+            # Allow Enter to cancel
+            if not birthday:
+                return None
+            
+            try:
+                contact.set_birthday(birthday)
+                return f"Birthday for {name} updated to: {birthday}."
+            except Exception as e:
+                print(f"Error: {e}. Please try again.")
+                continue
 
     @input_error
     def edit_name(self) -> str:

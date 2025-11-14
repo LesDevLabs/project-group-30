@@ -48,6 +48,21 @@ class Record:
         else:
             raise ValueError(f"Phone {phone} not found.")
 
+    def find_email(self, email: str):
+        """Find an email by value"""
+        for e in self.emails:
+            if e.value == email:
+                return e
+        return None
+
+    def edit_email(self, old_email: str, new_email: str):
+        """Edit an existing email address"""
+        email_obj = self.find_email(old_email)
+        if email_obj:
+            email_obj.value = new_email
+        else:
+            raise ValueError(f"Email {old_email} not found.")
+
     def __str__(self):
         result = f"Contact name: {self.name.value}"
         if self.phones:
