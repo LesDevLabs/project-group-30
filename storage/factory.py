@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from storage.storage_interface import StorageInterface
-from json_storage import JSONStorage
-from pickle_storage import PickleStorage
+from storage.json_storage import JSONStorage
+from storage.pickle_storage import PickleStorage
 
 STORAGE_TYPES = {
     "pkl": PickleStorage,
