@@ -1,5 +1,9 @@
-"""Presenter for handling all user-facing output with colorama"""
+"""Presenter for handling all user-facing output with colorama and Rich"""
 from colorama import Fore, Style, init
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
 
 # Initialize colorama
 init(autoreset=True)
@@ -142,28 +146,42 @@ class Presenter:
     
     @staticmethod
     def print_welcome():
-        """Print welcome message"""
-        welcome = f"""
-{Fore.BLUE}{Style.BRIGHT}{'='*50}
-  Welcome to the Personal Assistant!
-{'='*50}{Style.RESET_ALL}
-{Fore.CYAN}Commands:{Style.RESET_ALL}
-  {Fore.GREEN}add{Style.RESET_ALL}          - Add or update a contact
-  {Fore.GREEN}show{Style.RESET_ALL}         - Show a specific contact
-  {Fore.GREEN}all{Style.RESET_ALL}          - Show all contacts
-  {Fore.GREEN}search-contacts{Style.RESET_ALL} - Search contacts
-  {Fore.GREEN}change{Style.RESET_ALL}       - Change phone number
-  {Fore.GREEN}rename{Style.RESET_ALL}       - Rename a contact
-  {Fore.GREEN}delete{Style.RESET_ALL}       - Delete a contact
-  {Fore.GREEN}delete-phone{Style.RESET_ALL} - Delete a phone number
-  {Fore.MAGENTA}note-add,  n-add{Style.RESET_ALL}  - Add note
-  {Fore.MAGENTA}note-del,  n-del{Style.RESET_ALL}  - Delete note
-  {Fore.MAGENTA}note-list, n-list{Style.RESET_ALL} - List note(s)
-  {Fore.MAGENTA}note-edit, n-edit{Style.RESET_ALL} - Edit note
-  {Fore.GREEN}help{Style.RESET_ALL}         - Show help
-  {Fore.GREEN}exit{Style.RESET_ALL}         - Exit application
+        console = Console()
+    
+        title = Text("Personal Assistant", style="bold cyan", justify="center")
 
-{Fore.YELLOW}Example:{Style.RESET_ALL} add John 1234567890 john@example.com '123 Main St' 01.01.1990
-"""
-        print(welcome)
+        table = Table(show_header=True, header_style="bold cyan", border_style="blue")
+        table.add_column("Command", style="green", width=20)
+        table.add_column("Description", style="white", width=30)
+        
+        table.add_row("add", "Add or update a contact")
+        table.add_row("show", "Show a specific contact")
+        table.add_row("all", "Show all contacts")
+        table.add_row("search-contacts", "Search contacts")
+        table.add_row("change", "Change phone number")
+        table.add_row("rename", "Rename a contact")
+        table.add_row("delete", "Delete a contact")
+        table.add_row("delete-phone", "Delete a phone number")
+        
+        table.add_row("note-add, n-add", "Add note", style="magenta")
+        table.add_row("note-del, n-del", "Delete note", style="magenta")
+        table.add_row("note-list, n-list", "List note(s)", style="magenta")
+        table.add_row("note-edit, n-edit", "Edit note", style="magenta")
+        
+        table.add_row("help", "Show help")
+        table.add_row("exit", "Exit application")
+        
+        example = Text("\nExample: ", style="bold yellow")
+        example.append("add John 1234567890 john@example.com '123 Main St' 01.01.1990", style="white")
+        
+        panel = Panel(
+            table,
+            title="[bold cyan]Welcome to Personal Assistant![/bold cyan]",
+            subtitle="[yellow]Type 'help' for more information[/yellow]",
+            border_style="cyan",
+            padding=(1, 2)
+        )
+        
+        console.print(panel)
+        console.print(example)
 
