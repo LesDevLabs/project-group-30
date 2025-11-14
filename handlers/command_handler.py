@@ -94,7 +94,8 @@ class CommandHandler:
         contact = self.repository.find_contact(name)
         if contact is None:
             raise KeyError(f"Contact {name} not found.")
-        return str(contact)
+        Presenter.print_contacts_table([contact])
+        return ""
 
     @input_error
     def show_all_contacts(self):
@@ -102,7 +103,8 @@ class CommandHandler:
         contacts = self.repository.get_all_contacts()
         if not contacts:
             return "No contacts stored."
-        return "\n".join(str(contact) for contact in contacts)
+        Presenter.print_contacts_table(contacts)
+        return "" 
 
     @input_error
     def change(self, name: str, old_phone: str, new_phone: str) -> str:
@@ -189,22 +191,17 @@ class CommandHandler:
         exact_results = self.repository.search_contacts(query)
 
         if exact_results:
-            if len(exact_results) == 1:
-                return str(exact_results[0])
-
-            lines = [f"Found {len(exact_results)} contacts:"]
-            lines.extend(str(contact) for contact in exact_results)
-            return "\n".join(lines)
+            print(f"\nFound {len(exact_results)} contact(s):")
+            Presenter.print_contacts_table(exact_results)
+            return ""
 
         closest = self.repository.search_closest_contacts(query)
 
         if closest:
-            lines = [
-                f"No exact matches for '{query}':",
-                "Most similar contacts:"
-             ]
-            lines.extend(str(contact) for contact in closest)
-            return "\n".join(lines)
+            print(f"\nNo exact matches for '{query}'.")
+            print("Most similar contacts:")
+            Presenter.print_contacts_table(closest)
+            return ""
 
         return f"No contacts found matching '{query}'."
 
