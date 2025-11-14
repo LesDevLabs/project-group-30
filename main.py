@@ -38,7 +38,7 @@ def main():
             try:
                 # Get user input with autocomplete and history
                 user_input = prompt_manager.get_input("Enter command: ")
-                if (user_input):
+                if user_input:
                     command, *args = parse_user_input_data(user_input)
                     if command in ["close", "exit", "quit"]:
                         print("Good bye User!")
