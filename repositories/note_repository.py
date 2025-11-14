@@ -25,13 +25,66 @@ class NoteRepository:
     def add_note(self, note):
         self.notes.append(note)
         self.save_notes()
-        
-    def list_note(self):
-        if not self.notes:
-            print("No notes yet.")
-            return
 
-        print("📘 All notes:")
-        for i, n in enumerate(self.notes, start=1):
+        return f"Note {note.text} added"
+
+    def del_note(self, note):
+        if note not in self.notes:
+            return "Note not found."
+
+        deleted_text = note.text
+
+        self.notes.remove(note)
+        self.save_notes()
+
+        return f"Note: {deleted_text} deleted"
+
+    def find_note(self, query):
+        query = query.lower().strip()
+
+        # Find first note matching query in text or tags
+        for note in self.notes:
+            if query in note.text.lower() or any(query in tag.lower() for tag in note.tags):
+                return note
+
+        return None
+
+    def search_notes(self, query=""):
+        if not query:
+            return self.notes
+
+        query = query.lower().strip()
+        results = [
+            note for note in self.notes
+            if query in note.text.lower() or any(query in tag.lower() for tag in note.tags)
+        ]
+
+        return results
+
+    def format_notes(self, notes):
+        if not notes:
+            return "No notes to show."
+
+        lines = ["📘 Notes:"]
+        for i, n in enumerate(notes, start=1):
             tags = ", ".join(n.tags) if n.tags else "none"
-            print(f"{i}. {n.text}  [tags: {tags}]")
+            lines.append(f"{i}. {n.text}")
+            # lines.append(f"{i}. {n.text}  [tags: {tags}]")
+
+        return "\n".join(lines)
+
+
+    def edit_note(self, note, new_text=None, new_tags=None):
+        if note not in self.notes:
+            return "Note not found."
+
+        if new_text is not None:
+            note.text = new_text
+
+        if new_tags is not None:
+            note.tags = new_tags
+
+        self.save_notes()
+
+        return f"Note {note.text} updated"
+        # return f"Note updated: {note.text} [tags: {', '.join(note.tags) if note.tags else 'none'}]"

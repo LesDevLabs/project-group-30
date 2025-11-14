@@ -17,34 +17,59 @@ class CommandHandler:
             "delete-phone": self.delete_phone,
             "search-contact" : self.search_contacts,
             "n-add" : self.note_add,
-            "n-all" : self.note_list,
+            "n-del" : self.note_del,
+            "n-list": self.note_list,
+            "n-edit": self.note_edit,
             "help": self._handle_help
         }
 
     def __getitem__(self, key):
         return self.commands.get(key)
+        
+    @input_error
+    def note_add(self, text=None):
+        while not text:
+            text = input("Enter text: ").strip()
 
-    @input_error
-    def note_list(self):
-        self.note_repo.list_note()
-        
-    @input_error
-    def note_add(self):
-        print("Let's create a new note. Text is required. Tags are optional.")
-        print("Press Enter to skip tags.\n")
-        while True:
-            text = input("Text(required): ").strip()
-            if not text:
-                print("Text is required. Please enter a text.\n")
-                continue
-            break
-        
         note = Note(text)
+        return self.note_repo.add_note(note)
 
-        note = self.note_repo.add_note(note)
-        return "Note added."
+    @input_error
+    def note_del(self, query=None):
+        while not query:
+            query = input("Enter a search string: ").strip()
 
+        note = self.note_repo.find_note(query)
 
+        if not note:
+            return f"Note {query} not found"
+
+        return self.note_repo.del_note(note)
+
+    @input_error
+    def note_list(self, query=None):
+        notes = self.note_repo.search_notes(query)
+
+        if notes and not query :
+            print("Use n-list <string> for filter notes")
+
+        return self.note_repo.format_notes(notes)
+
+    @input_error
+    def note_edit(self, query=None):
+        while not query:
+            query = input("Enter a search string: ").strip()
+
+        note = self.note_repo.find_note(query)
+        if not note:
+            return f"Note {query} not found"
+        
+        print(f"Edit note {note.text}")
+        new_text = None
+        while not new_text:
+            new_text = input("Enter a new text: ").strip()
+
+        return self.note_repo.edit_note(note, new_text)
 
     @input_error
     def add_contact(self):
