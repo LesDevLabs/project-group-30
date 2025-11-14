@@ -26,7 +26,10 @@ class CommandSuggester:
         "search-contacts",
         "search-contact",
         "birthdays",
-        "help"
+        "help",
+        "close",
+        "exit",
+        "quit",
     ]
     
     @staticmethod
