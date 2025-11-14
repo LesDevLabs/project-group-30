@@ -2,6 +2,7 @@ import sys
 
 from cli.command_suggester import CommandSuggester
 from cli.presenter import Presenter
+from cli.prompt_manager import PromptManager
 from handlers.command_handler import CommandHandler
 from repositories.contact_repository import ContactRepository
 from repositories.note_repository import NoteRepository
@@ -26,6 +27,7 @@ def main():
     note_repo = NoteRepository()
     command_handler = CommandHandler(repository, note_repo)
     command_suggester = CommandSuggester()
+    prompt_manager = PromptManager(commands=CommandSuggester.AVAILABLE_COMMANDS)
 
     # Display welcome message
     Presenter.print_welcome()
@@ -34,12 +36,12 @@ def main():
     try:
         while True:
             try:
-                # Get user input with colored prompt
-                user_input = input(Presenter.print_prompt())
-                if (user_input):
+                # Get user input with autocomplete and history
+                user_input = prompt_manager.get_input("Enter command: ")
+                if user_input:
                     command, *args = parse_user_input_data(user_input)
                     if command in ["close", "exit", "quit"]:
-                        print("Good bye!")
+                        print("Good bye User!")
                         break
                     if command_handler[command]:
                         print(command_handler[command](*args))
