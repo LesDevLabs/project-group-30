@@ -17,11 +17,8 @@ def main():
         print(f"Error: {e}")
         sys.exit(1)
     
-    try:
-        repository = storage.load()
-        if repository is None or not isinstance(repository, ContactRepository):
-            repository = ContactRepository()
-    except (FileNotFoundError, EOFError):
+    repository = storage.load()
+    if not isinstance(repository, ContactRepository):
         repository = ContactRepository()
     
     command_handler = CommandHandler(repository)
