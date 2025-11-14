@@ -42,7 +42,7 @@ class SearchService:
         for phone in getattr(record, "phones", []):
             fields.append(phone.value.lower())
 
-        email = getattr(record, "email", None)
+        email = getattr(record, "emails", None)
         if email:
             fields.append(email.value.lower())
 
