@@ -1,5 +1,6 @@
 from cli.command_suggester import CommandSuggester
 from repositories.contact_repository import ContactRepository
+from repositories.note_repository import NoteRepository
 from handlers.command_handler import CommandHandler
 from cli.presenter import Presenter
 from storage.pickle_storage import PickleStorage
@@ -12,10 +13,10 @@ def main():
     # TODO load data
     # repository = storage.load()
     repository = ContactRepository()
-    command_handler = CommandHandler(repository)
+    note_repo = NoteRepository()
+    command_handler = CommandHandler(repository, note_repo)
     command_suggester = CommandSuggester()
   
-
     # Display welcome message
     Presenter.print_welcome()
 

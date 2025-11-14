@@ -1,12 +1,14 @@
 from cli.presenter import Presenter
 from models.contact import Record
+from models.note import Note
 from handlers.decorators import input_error
 from handlers.birthday_service import BirthdayService
 
 
 class CommandHandler:
-    def __init__(self, repository):
+    def __init__(self, repository, note_repo):
         self.repository = repository
+        self.note_repo = note_repo
         self.birthday_service = BirthdayService(repository)
         self.commands = {
             "add": self.add_contact,
@@ -16,6 +18,14 @@ class CommandHandler:
             "rename": self.edit_name,
             "delete": self.delete_contact,
             "delete-phone": self.delete_phone,
+            "note-add" : self.note_add,
+            "n-add"    : self.note_add,
+            "note-del" : self.note_del,
+            "n-del"    : self.note_del,
+            "note-list": self.note_list,
+            "n-list"   : self.note_list,
+            "note-edit": self.note_edit,
+            "n-edit"   : self.note_edit,
             "search-contact": self.search_contacts,
             "birthdays": self.show_birthdays,
             "help": self._handle_help
@@ -23,7 +33,7 @@ class CommandHandler:
 
     def __getitem__(self, key):
         return self.commands.get(key)
-
+        
     @input_error
     def add_contact(self):
         print(
@@ -241,6 +251,51 @@ class CommandHandler:
             lines.append(contact_info)
 
         return "\n".join(lines)
+
+    @input_error
+    def note_add(self, text=None):
+        while not text:
+            text = input("Enter text: ").strip()
+
+        note = Note(text)
+        return self.note_repo.add_note(note)
+
+    @input_error
+    def note_del(self, query=None):
+        while not query:
+            query = input("Enter a search string: ").strip()
+
+        note = self.note_repo.find_note(query)
+
+        if not note:
+            return f"Note {query} not found"
+
+        return self.note_repo.del_note(note)
+
+    @input_error
+    def note_list(self, query=None):
+        notes = self.note_repo.search_notes(query)
+
+        if notes and not query :
+            print("Use n-list <string> for filter notes")
+
+        return self.note_repo.format_notes(notes)
+
+    @input_error
+    def note_edit(self, query=None):
+        while not query:
+            query = input("Enter a search string: ").strip()
+
+        note = self.note_repo.find_note(query)
+        if not note:
+            return f"Note {query} not found"
+        
+        print(f"Edit note {note.text}")
+        new_text = None
+        while not new_text:
+            new_text = input("Enter a new text: ").strip()
+
+        return self.note_repo.edit_note(note, new_text)
 
     def _handle_help(self):
         header = Presenter.header("Available Commands:")
