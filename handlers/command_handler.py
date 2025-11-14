@@ -1,7 +1,7 @@
 from cli.presenter import Presenter
 from models.contact import Record
+from models.note import Note
 from handlers.decorators import input_error
-from Note import Note
 
 class CommandHandler:
     def __init__(self, repository, note_repo):

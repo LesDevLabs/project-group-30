@@ -1,15 +1,6 @@
 import json
 from pathlib import Path
 
-class Note:
-    def __init__(self, text, tags=None):
-        self.text = text
-        self.tags = tags if tags else []
-
-    def to_dict(self):
-        return {"text": self.text, "tags": self.tags}
-
-
 class NotesAssistant:
     def __init__(self, data_dir="notes_data"):
         self.data_dir = Path(data_dir)
