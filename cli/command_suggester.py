@@ -8,9 +8,25 @@ class CommandSuggester:
     
     # Available commands
     AVAILABLE_COMMANDS = [
-        "add", "show", "all", "search-contacts", "change", 
-        "rename", "delete", "delete-phone", "help", "exit", 
-        "quit", "close"
+        "add",
+        "show",
+        "all",
+        "change",
+        "rename",
+        "delete",
+        "delete-phone",
+        "note-add",
+        "n-add",
+        "note-del",
+        "n-del",
+        "note-list",
+        "n-list",
+        "note-edit",
+        "n-edit",
+        "search-contacts",
+        "search-contact",
+        "birthdays",
+        "help"
     ]
     
     @staticmethod
