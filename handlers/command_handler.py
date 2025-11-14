@@ -104,32 +104,62 @@ class CommandHandler:
         if record is None:
             raise KeyError(f"Contact {name} not found.")
         record.edit_phone(old_phone, new_phone)
-        return f"Phone number for {name} changed from {old_phone} to {new_phone}."
+        return f"Phone number for {name} changed from {old_phone} to {new_phone}. /n"
 
     @input_error
-    def edit_name(self, old_name: str, new_name: str) -> str:
+    def edit_name(self) -> str:
         """Rename a contact"""
-        record = self.repository.find_contact(old_name)
-        if not record:
-            raise KeyError(f"Contact {old_name} not found.")
+        print("Let's update contact name. Please enter contact name")
+        while True:
+            name = input("Name(required): ").strip()
+            if not name:
+                print("Name is required. Please enter a name.\n")
+                continue
+            break
+
+        contact = self.repository.find_contact(name)
+
+        if not contact:
+            raise KeyError(f"Contact {name} not found.")
+        
+        while True:
+            new_name = input("New name(required): ").strip()
+            if not new_name:
+                print("New name is required. Please enter a name.")
+                continue
+            break
 
         if self.repository.find_contact(new_name):
             raise ValueError(f"Contact {new_name} already exists.")
 
-        self.repository.delete_contact(old_name)
-        record.name.value = new_name
-        self.repository.add_contact(record)
+        self.repository.delete_contact(name)
+        contact.name.value = new_name
+        self.repository.add_contact(contact)
 
-        return f"Contact name changed from {old_name} to {new_name}."
+        return f"Contact name changed from {name} to {new_name}."
 
     @input_error
-    def delete_contact(self, name: str):
+    def delete_contact(self):
         """Delete a contact"""
+        print("Let's delete contact name. Please enter contact name")
+        while True:
+            name = input("Name(required): ").strip()
+            if not name:
+                print("Name is required. Please enter a name.\n")
+                continue
+            break
+
         record = self.repository.find_contact(name)
         if record is None:
             raise KeyError(f"Contact {name} not found.")
-        self.repository.delete_contact(name)
-        return f"Contact {name} deleted successfully."
+        print("Let's delete contact name. Please enter contact name")
+        response = input("Do you really want to remove contact? (y/n): ").strip()
+        if (response == 'y'):
+            self.repository.delete_contact(name)
+            return f"Contact {name} deleted successfully."
+        else:
+            return 'Return to main menu'
+        
 
     @input_error
     def delete_phone(self, name: str, phone: str) -> str:
