@@ -37,24 +37,47 @@ class CommandHandler:
             contact = Record(name)
             self.repository.add_contact(contact)
         else:
-            return "Contact alreade exist, please use update to modify"
+            return "Contact already exist, please use update to modify"
 
+        # Обработка телефона с повторным вводом при ошибке
+        while True:
+            phone = input("Phone (optional, format: +380XXXXXXXXX): ").strip()
+            if not phone:
+                break  # Пропускаем если пусто
+            try:
+                contact.add_phone(phone)
+                break  # Успешно добавлен
+            except Exception as e:
+                print(f"Error: {e}. Please try again or press Enter to skip.")
+                continue
         
-        phone = input("Phone (optional): ").strip() or None
-        if phone:
-            contact.add_phone(phone)
-        
-        email = input("Email (optional): ").strip() or None
-        if email:
-            contact.add_email(email)
+        # Обработка email с повторным вводом при ошибке
+        while True:
+            email = input("Email (optional): ").strip()
+            if not email:
+                break  # Пропускаем если пусто
+            try:
+                contact.add_email(email)
+                break  # Успешно добавлен
+            except Exception as e:
+                print(f"Error: {e}. Please try again or press Enter to skip.")
+                continue
         
         address = input("Address (optional): ").strip() or None
         if address:
             contact.set_address(address)
         
-        birthday = input("Birthday (optional, dd.mm.yyyy): ").strip() or None
-        if birthday:
-            contact.set_birthday(birthday)
+        # Обработка дня рождения с повторным вводом при ошибке
+        while True:
+            birthday = input("Birthday (optional, dd.mm.yyyy): ").strip()
+            if not birthday:
+                break  # Пропускаем если пусто
+            try:
+                contact.set_birthday(birthday)
+                break  # Успешно добавлен
+            except Exception as e:
+                print(f"Error: {e}. Please try again or press Enter to skip.")
+                continue
 
         return "Contact added."
 
