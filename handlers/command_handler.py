@@ -531,20 +531,12 @@ class CommandHandler:
 
     @input_error
     def note_del(self, query=None):
-        q = query
-        notes = []
         while True:
-            notes = self.repository.search_notes(query)
-            if notes:
-                header = f"Notes matching filter: {query}" if query else "All notes"
-                print(self.repository.format_notes(notes, header))
-            else:
-                print("No notes to show.")
+            notes, msg = self.repository.search_notes(query)
+            print(msg)
 
             query = input("Enter filter (empty to continue): ").strip()
-            if query:
-                q = query
-            else:
+            if not query:
                 break
 
         if not notes:
@@ -552,6 +544,7 @@ class CommandHandler:
         
         while True:
             user_input = input(f"Enter the number of the note to delete (1-{len(notes)}, empty to stop): ").strip()
+
             if not user_input:
                 break
 
@@ -566,13 +559,8 @@ class CommandHandler:
 
             note_to_delete = notes[index - 1]
             print(self.repository.del_note(note_to_delete))
-            notes = self.repository.search_notes(q)
-            if notes:
-                header = f"Notes matching filter: {q}" if q else "All notes"
-                print(self.repository.format_notes(notes, header))
-            else:
-                break
-
+            break
+        
         return ''
 
     @input_error
@@ -584,7 +572,7 @@ class CommandHandler:
             query = input("Enter filter (empty to stop): ").strip()
             if not query:
                 break
-            
+
         return ''
 
     @input_error
