@@ -531,15 +531,49 @@ class CommandHandler:
 
     @input_error
     def note_del(self, query=None):
-        while not query:
-            query = input("Enter a search string: ").strip()
+        q = query
+        notes = []
+        while True:
+            notes = self.repository.search_notes(query)
+            if notes:
+                header = f"Notes matching filter: {query}" if query else "All notes"
+                print(self.repository.format_notes(notes, header))
+            else:
+                print("No notes to show.")
 
-        note = self.repository.find_note(query)
+            query = input("Enter filter (empty to continue): ").strip()
+            if query:
+                q = query
+            else:
+                break
 
-        if not note:
-            return f"Note {query} not found"
+        if not notes:
+            return "No notes to delete. Deletion cancelled."
+        
+        while True:
+            user_input = input(f"Enter the number of the note to delete (1-{len(notes)}, empty to stop): ").strip()
+            if not user_input:
+                break
 
-        return self.repository.del_note(note)
+            try:
+                index = int(user_input)
+                if not 1 <= index <= len(notes):
+                    print("Invalid number. Try again.")
+                    continue
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
+
+            note_to_delete = notes[index - 1]
+            print(self.repository.del_note(note_to_delete))
+            notes = self.repository.search_notes(q)
+            if notes:
+                header = f"Notes matching filter: {q}" if q else "All notes"
+                print(self.repository.format_notes(notes, header))
+            else:
+                break
+
+        return ''
 
     @input_error
     def note_list(self, query=None):

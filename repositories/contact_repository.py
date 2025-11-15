@@ -52,7 +52,7 @@ class ContactRepository:
 
         self.notes.remove(note)
 
-        return f"Note: {deleted_text} deleted"
+        return self.format_notes(note, " Note deleted:")
 
     def find_note(self, query):
         query = query.lower().strip()
