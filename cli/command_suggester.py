@@ -25,7 +25,6 @@ class CommandSuggester:
         "note-edit",
         "ne",
         "search-contacts",
-        "search-contact",
         "birthdays",
         "help",
         "close",

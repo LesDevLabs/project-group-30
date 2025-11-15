@@ -25,7 +25,7 @@ class CommandHandler:
             "nl"       : self.note_list,
             "ne"       : self.note_edit,
             "n-edit"   : self.note_edit,
-            "search-contact": self.search_contacts,
+            "search-contacts": self.search_contacts,
             "birthdays": self.show_birthdays,
             "help": self._handle_help
         }
