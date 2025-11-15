@@ -122,7 +122,7 @@ class CommandHandler:
         """Change a contact field - displays interactive menu"""
         while True:
             self._display_change_menu()
-            choice = input("Enter your choice: ").strip()
+            choice = input(Presenter.format_hint("Enter your choice: ")).strip()
 
             # Allow Enter to cancel
             if not choice:
@@ -168,12 +168,12 @@ class CommandHandler:
     def _display_change_menu(self):
         """Display the change menu options"""
         print(Presenter.info("\nChoose what you want to edit:\n"))
-        print("1. Name")
-        print("2. Phone")
-        print("3. Email")
-        print("4. Address")
-        print("5. Birthday")
-        print("6. Return\n")
+        print(Presenter.format_hint("1. Name"))
+        print(Presenter.format_hint("2. Phone"))
+        print(Presenter.format_hint("3. Email"))
+        print(Presenter.format_hint("4. Address"))
+        print(Presenter.format_hint("5. Birthday"))
+        print(Presenter.format_hint("6. Return\n"))
 
     @input_error
     def _change_name(self, contact: Record, current_name: str) -> str:
