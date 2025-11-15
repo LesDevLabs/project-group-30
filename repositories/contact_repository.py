@@ -4,7 +4,7 @@ from models.contact import Record
 from models.note import Note
 
 from search.search_service import SearchService
-
+from cli.presenter import Presenter
 
 class ContactRepository:
     def __init__(self):
@@ -44,7 +44,7 @@ class ContactRepository:
     # --- Notes ---
     def add_note(self, note):
         self.notes.append(note)
-        return self.format_notes(note, " Note added:")
+        return self.format_notes(note, Presenter.success(" Note added:"))
 
     def del_note(self, note):
         if note not in self.notes:
@@ -54,7 +54,7 @@ class ContactRepository:
 
         self.notes.remove(note)
 
-        return self.format_notes(note, " Note deleted:")
+        return self.format_notes(note, Presenter.success(" Note deleted:"))
 
     def find_note(self, query):
         query = query.lower().strip()
@@ -66,7 +66,7 @@ class ContactRepository:
         return None
 
     def search_notes(self, query=""):
-        header = f"Notes matching filter: {query}" if query else "All notes"
+        header = f"Notes matching filter: {query}" if query else " All notes"
 
         if not query:
             res = self.notes
@@ -81,7 +81,7 @@ class ContactRepository:
 
     def format_notes(self, notes, header=""):
         if notes is None or (isinstance(notes, list) and not notes):
-            return "No notes to show."
+            return " No notes to show."
 
         if isinstance(notes, Note):
             notes = [notes]
@@ -109,7 +109,7 @@ class ContactRepository:
         if new_tags is not None and len(new_tags) > 0:
             note.tags = new_tags
 
-        return self.format_notes(note, ' Note updated:')
+        return self.format_notes(note, Presenter.success(' Note updated:'))
 
     def notes_by_tags(self, notes=None):
         if not notes:

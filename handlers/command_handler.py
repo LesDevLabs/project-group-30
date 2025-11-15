@@ -521,10 +521,10 @@ class CommandHandler:
     @input_error
     def note_add(self, text=None, tags=None):
         while not text:
-            text = input("Enter text: ").strip()
+            text = input(Presenter.info("Enter note text: ")).strip()
 
         if tags is None:
-            raw = input("Enter tags (comma-separated, optional): ").strip()
+            raw = input(Presenter.info("Enter tags separated by commas (or press Enter to continue): ")).strip()
             if raw:
                 tags = [t.strip() for t in raw.split(",") if t.strip()]
             else:
@@ -543,7 +543,7 @@ class CommandHandler:
             notes, msg = self.repository.search_notes(query)
             print(msg)
 
-            query = input("Enter filter (empty to continue): ").strip()
+            query = input(Presenter.info("Enter a search string (or press Enter to continue): ")).strip()
             if not query:
                 break
 
@@ -551,7 +551,7 @@ class CommandHandler:
             return "No notes to delete. Deletion cancelled."
         
         while True:
-            user_input = input(f"Enter the number of the note to delete (1-{len(notes)}, empty to stop): ").strip()
+            user_input = input(Presenter.info(f"Enter the number of the note to delete 1-{len(notes)} (or press Enter to exit): ")).strip()
 
             if not user_input:
                 break
@@ -559,10 +559,10 @@ class CommandHandler:
             try:
                 index = int(user_input)
                 if not 1 <= index <= len(notes):
-                    print("Invalid number. Try again.")
+                    print(Presenter.warning("Invalid number. Try again."))
                     continue
             except ValueError:
-                print("Please enter a valid number.")
+                print(Presenter.warning("Please enter a valid number."))
                 continue
 
             note_to_delete = notes[index - 1]
@@ -577,7 +577,7 @@ class CommandHandler:
             notes, msg = self.repository.search_notes(query)
             print(msg)
 
-            query = input("Enter filter (empty to stop): ").strip()
+            query = input(Presenter.info("Enter a search string (or press Enter to exit): ")).strip()
             if not query:
                 break
 
@@ -589,7 +589,7 @@ class CommandHandler:
             notes, msg = self.repository.search_notes(query)
             print(msg)
 
-            query = input("Enter filter (empty to continue): ").strip()
+            query = input(Presenter.info("Enter a search string (or press Enter to continue): ")).strip()
             if not query:
                 break
 
@@ -597,7 +597,7 @@ class CommandHandler:
             return "No notes to edit. Edit cancelled."
         
         while True:
-            user_input = input(f"Enter the number of the note to edit (1-{len(notes)}, empty to stop): ").strip()
+            user_input = input(Presenter.info(f"Enter the number of the note to edit 1-{len(notes)} (or press Enter to exit): ")).strip()
 
             if not user_input:
                 return 'Edit cancelled.'
@@ -605,10 +605,10 @@ class CommandHandler:
             try:
                 index = int(user_input)
                 if not 1 <= index <= len(notes):
-                    print("Invalid number. Try again.")
+                    print(Presenter.warning("Invalid number. Try again."))
                     continue
             except ValueError:
-                print("Please enter a valid number.")
+                print(Presenter.warning("Please enter a valid number."))
                 continue
 
             note_to_edit = notes[index - 1]
@@ -616,9 +616,9 @@ class CommandHandler:
 
         print(self.repository.format_notes(note_to_edit, " Editing..."))
         
-        new_text = input("Enter a new text (empty to continue): ").strip()
+        new_text = input(Presenter.info("Enter a new note text (or press Enter to continue): ")).strip()
 
-        tags = input("Enter tags (comma-separated, optional): ").strip() 
+        tags = input(Presenter.info("Enter new tags separated by commas (or press Enter to continue): ")).strip() 
         if tags:
             tags = [t.strip() for t in tags.split(",") if t.strip()]
 

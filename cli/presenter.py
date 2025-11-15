@@ -242,10 +242,11 @@ class Presenter:
         print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
         
         commands_notes = [
-            ("note-add or na", "Add a note"),
-            ("note-del or nd", "Delete a note"),
-            ("note-list or nl", "Show list of notes (with filtering)"),
-            ("note-edit or ne", "Edit a note"),
+            ("note-add [text] [tag1,tag2,...] or na", "Add a note"),
+            ("note-del [filter] or nd", "Delete a note"),
+            ("note-list [filter] or nl", "Show list of notes (with filtering)"),
+            ("note-edit [filter] or ne", "Edit a note"),
+            ("tag", "Show notes sorted by tags"),
         ]
         
         for cmd, desc in commands_notes:
@@ -271,6 +272,6 @@ class Presenter:
         print(f"{Fore.WHITE}  show John                    {Fore.CYAN}→ Show contact John{Style.RESET_ALL}")
         print(f"{Fore.WHITE}  search-contacts John         {Fore.CYAN}→ Find contacts with 'John'{Style.RESET_ALL}")
         print(f"{Fore.WHITE}  birthdays 7                  {Fore.CYAN}→ Birthdays in the next 7 days{Style.RESET_ALL}")
-        print(f"{Fore.WHITE}  note-add                     {Fore.CYAN}→ Add a new note{Style.RESET_ALL}\n")
+        print(f"{Fore.WHITE}  note-add milk buy           {Fore.CYAN}→ Add a new note{Style.RESET_ALL}\n")
 
     
