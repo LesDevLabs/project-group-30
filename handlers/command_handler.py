@@ -42,7 +42,7 @@ class CommandHandler:
         print(Presenter.info("Press Enter to skip any optional field."))
      
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.highlight("Name (required): ")).strip()
             if not name:
                 print(Presenter.error("Name is required. Please enter a name."))
                 continue
@@ -58,7 +58,7 @@ class CommandHandler:
 
         # Обработка телефона с повторным вводом при ошибке
         while True:
-            phone = input("Phone (optional, format: 380XXXXXXXXX): ").strip()
+            phone = input(Presenter.info("Phone (optional): ") + Presenter.format_hint("[380XXXXXXXXX]") + ": ").strip()
             if not phone:
                 break  # Пропускаем если пусто
             try:
@@ -70,7 +70,7 @@ class CommandHandler:
 
         # Обработка email с повторным вводом при ошибке
         while True:
-            email = input("Email (optional): ").strip()
+            email = input(Presenter.info("Email (optional): ")).strip()
             if not email:
                 break  # Пропускаем если пусто
             try:
@@ -80,13 +80,13 @@ class CommandHandler:
                 print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue
 
-        address = input("Address (optional): ").strip() or None
+        address = input(Presenter.info("Address (optional): ")).strip() or None
         if address:
             contact.set_address(address)
 
         # Обработка дня рождения с повторным вводом при ошибке
         while True:
-            birthday = input("Birthday (optional, dd.mm.yyyy): ").strip()
+            birthday = input(Presenter.info("Birthday (optional): ") + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
             if not birthday:
                 break  # Пропускаем если пусто
             try:
@@ -208,7 +208,7 @@ class CommandHandler:
             if add_new == "y":
                 while True:
                     new_phone = input(
-                        "Enter new phone (format: +380XXXXXXXXX): "
+                        "Enter new phone " + Presenter.format_hint("[+380XXXXXXXXX]") + ": "
                     ).strip()
                     # Allow Enter to cancel
                     if not new_phone:
@@ -265,7 +265,7 @@ class CommandHandler:
 
         # Get new phone
         while True:
-            new_phone = input("Enter new phone (format: +380XXXXXXXXX): ").strip()
+            new_phone = input("Enter new phone " + Presenter.format_hint("[+380XXXXXXXXX]") + ": ").strip()
             # Allow Enter to cancel
             if not new_phone:
                 return None
@@ -378,7 +378,7 @@ class CommandHandler:
             print(Presenter.info(f"Current birthday: {contact.birthday}"))
 
         while True:
-            birthday = input("Enter new birthday (dd.mm.yyyy): ").strip()
+            birthday = input("Enter new birthday " + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
             # Allow Enter to cancel
             if not birthday:
                 return None
@@ -395,7 +395,7 @@ class CommandHandler:
         """Rename a contact"""
         print(Presenter.info("Let's update contact name. Please enter contact name"))
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.info("Name (required): ")).strip()
             if not name:
                 print(Presenter.error("Name is required. Please enter a name."))
                 continue
@@ -407,7 +407,7 @@ class CommandHandler:
             raise KeyError(f"Contact {name} not found.")
 
         while True:
-            new_name = input("New name(required): ").strip()
+            new_name = input(Presenter.info("New name (required): ")).strip()
             if not new_name:
                 print(Presenter.error("New name is required. Please enter a name."))
                 continue
@@ -427,7 +427,7 @@ class CommandHandler:
         """Delete a contact"""
         print(Presenter.info("Let's delete contact. Please enter contact name"))
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.info("Name (required): ")).strip()
             if not name:
                 print(Presenter.error("Name is required. Please enter a name."))
                 continue
@@ -438,19 +438,18 @@ class CommandHandler:
             raise KeyError(f"Contact {name} not found.")
         print(Presenter.warning("Do you really want to remove this contact?"))
         response = input("(y/n): ").strip()
-        if (response == 'y'):
-
+        if response == "y":
             self.repository.delete_contact(name)
             return Presenter.success(f"Contact {name} deleted successfully.")
         else:
-            return Presenter.info('Cancelled. Returning to main menu.')
+            return Presenter.info("Cancelled. Returning to main menu.")
         
     @input_error
     def delete_phone(self) -> str:
         """Delete a phone number from a contact"""
         print(Presenter.info("Let's delete phone number from contact. Please enter contact name"))
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.info("Name (required): ")).strip()
             if not name:
                 print(Presenter.error("Name is required. Please enter a name."))
                 continue
@@ -460,7 +459,7 @@ class CommandHandler:
             raise KeyError(f"Contact {name} not found.")
 
         while True:
-            phone = input("Phone(required): ").strip()
+            phone = input(Presenter.info("Phone (required): ")).strip()
             if not phone:
                 print(Presenter.error("Phone is required. Please enter a value."))
                 continue
@@ -530,7 +529,7 @@ class CommandHandler:
         notes = self.repository.search_notes(query)
 
         if notes and not query:
-            print("Use n-list <string> for filter notes")
+            print(Presenter.info("Use n-list <string> for filter notes"))
 
         return self.repository.format_notes(notes)
 
@@ -543,7 +542,7 @@ class CommandHandler:
         if not note:
             return f"Note {query} not found"
 
-        print(f"Edit note {note.text}")
+        print(Presenter.info(f"Edit note {note.text}"))
         new_text = None
         while not new_text:
             new_text = input("Enter a new text: ").strip()
