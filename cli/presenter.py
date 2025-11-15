@@ -132,6 +132,7 @@ class Presenter:
             ["note-del, nd", "Delete note"],
             ["note-list, nl", "List note(s)"],
             ["note-edit, ne", "Edit note"],
+            ["tag", "Show notes sorted by tags"],
             ["help", "Show help"],
             ["exit", "Exit application"],
         ]
@@ -218,8 +219,8 @@ class Presenter:
             ("search-contacts <query>", "Search contacts by name, phone, or email"),
             ("change", "Change contact information (interactive menu)"),
             ("rename", "Rename a contact"),
-            ("delete <name>", "Delete a contact"),
-            ("delete-phone <name> <phone>", "Delete a phone number from a contact"),
+            ("delete", "Delete a contact"),
+            ("delete-phone", "Delete a phone number from a contact"),
         ]
         
         for cmd, desc in commands_contacts:
@@ -241,10 +242,10 @@ class Presenter:
         print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
         
         commands_notes = [
-            ("note-add, na", "Add a note"),
-            ("note-del, nd", "Delete a note"),
-            ("note-list, nl", "Show list of notes (with filtering)"),
-            ("note-edit, ne", "Edit a note"),
+            ("note-add or na", "Add a note"),
+            ("note-del or nd", "Delete a note"),
+            ("note-list or nl", "Show list of notes (with filtering)"),
+            ("note-edit or ne", "Edit a note"),
         ]
         
         for cmd, desc in commands_notes:
