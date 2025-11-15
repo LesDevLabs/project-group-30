@@ -1,8 +1,7 @@
 from models.contact import Record
 
-from models.contact import Record
 from search.search_service import SearchService
-from models.note import Note
+
 
 class ContactRepository:
     def __init__(self):
@@ -32,10 +31,9 @@ class ContactRepository:
     def has_contact(self, name: str) -> bool:
         """Check if contact exists"""
         return name in self.contacts
-    
+
     def search_contacts(self, query: str):
         return self.search_service.exact_search(self.contacts, query)
-
 
     def search_closest_contacts(self, query: str):
         return self.search_service.fuzzy_search(self.contacts, query)
@@ -88,7 +86,6 @@ class ContactRepository:
             # lines.append(f"{i}. {n.text}  [tags: {tags}]")
 
         return "\n".join(lines)
-
 
     def edit_note(self, note, new_text=None, new_tags=None):
         if note not in self.notes:
