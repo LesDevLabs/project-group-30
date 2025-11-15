@@ -42,8 +42,7 @@ class SearchService:
         for phone in getattr(record, "phones", []):
             fields.append(phone.value.lower())
 
-        email = getattr(record, "emails", None)
-        if email:
+        for email in getattr(record, "emails", []):
             fields.append(email.value.lower())
 
         address = getattr(record, "address", None)
@@ -52,6 +51,6 @@ class SearchService:
 
         birthday = getattr(record, "birthday", None)
         if birthday:
-            fields.append(str(birthday.value).lower())
+            fields.append(str(birthday).lower())
 
         return fields

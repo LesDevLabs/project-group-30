@@ -158,7 +158,7 @@ class Presenter:
             ["show", "Show a specific contact"],
             ["all", "Show all contacts"],
             ["search-contacts", "Search contacts"],
-            ["change", "Change phone number"],
+            ["change", "Change contact information"],
             ["rename", "Rename a contact"],
             ["delete", "Delete a contact"],
             ["delete-phone", "Delete a phone number"],
