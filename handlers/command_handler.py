@@ -194,17 +194,13 @@ class CommandHandler:
         """Handle phone editing"""
         if not contact.phones:
             print("This contact has no phone numbers.")
-            add_new = (
-                input("Would you like to add a new phone? (y/n): ").strip().lower()
-            )
+            add_new = input("Would you like to add a new phone? (y/n): ").strip().lower()
             # Allow Enter to cancel
             if not add_new:
                 return None
             if add_new == "y":
                 while True:
-                    new_phone = input(
-                        "Enter new phone (format: +380XXXXXXXXX): "
-                    ).strip()
+                    new_phone = input("Enter new phone (format: 380XXXXXXXXX): ").strip()
                     # Allow Enter to cancel
                     if not new_phone:
                         return None
@@ -226,8 +222,7 @@ class CommandHandler:
         while True:
             try:
                 selection = input(
-                    "\nEnter the number of the phone to edit "
-                    "(or enter the phone number directly): "
+                    "\nEnter the number of the phone to edit (or enter the phone number directly): "
                 ).strip()
                 # Allow Enter to cancel
                 if not selection:
@@ -239,10 +234,7 @@ class CommandHandler:
                         old_phone = contact.phones[idx - 1].value
                         break
                     else:
-                        print(
-                            f"Invalid selection. Please enter a number "
-                            f"between 1 and {len(contact.phones)}."
-                        )
+                        print(f"Invalid selection. Please enter a number between 1 and {len(contact.phones)}.")
                         continue
                 except ValueError:
                     # Not a number, treat as phone value
@@ -264,9 +256,7 @@ class CommandHandler:
                 return None
             try:
                 contact.edit_phone(old_phone, new_phone)
-                return (
-                    f"Phone number for {name} changed from {old_phone} to {new_phone}."
-                )
+                return f"Phone number for {name} changed from {old_phone} to {new_phone}."
             except Exception as e:
                 print(f"Error: {e}. Please try again.")
                 continue
@@ -276,9 +266,7 @@ class CommandHandler:
         """Handle email editing"""
         if not contact.emails:
             print("This contact has no email addresses.")
-            add_new = (
-                input("Would you like to add a new email? (y/n): ").strip().lower()
-            )
+            add_new = input("Would you like to add a new email? (y/n): ").strip().lower()
             # Allow Enter to cancel
             if not add_new:
                 return None
@@ -306,8 +294,7 @@ class CommandHandler:
         while True:
             try:
                 selection = input(
-                    "\nEnter the number of the email to edit "
-                    "(or enter the email address directly): "
+                    "\nEnter the number of the email to edit (or enter the email address directly): "
                 ).strip()
                 # Allow Enter to cancel
                 if not selection:
@@ -319,10 +306,7 @@ class CommandHandler:
                         old_email = contact.emails[idx - 1].value
                         break
                     else:
-                        print(
-                            f"Invalid selection. Please enter a number "
-                            f"between 1 and {len(contact.emails)}."
-                        )
+                        print(f"Invalid selection. Please enter a number between 1 and {len(contact.emails)}.")
                         continue
                 except ValueError:
                     # Not a number, treat as email value
@@ -427,7 +411,6 @@ class CommandHandler:
         record = self.repository.find_contact(name)
         if record is None:
             raise KeyError(f"Contact {name} not found.")
-        print("Let's delete contact name. Please enter contact name")
         response = input("Do you really want to remove contact? (y/n): ").strip()
         if response == "y":
             self.repository.delete_contact(name)
@@ -449,6 +432,8 @@ class CommandHandler:
         if not record:
             raise KeyError(f"Contact {name} not found.")
 
+        print(f"{record} \n")
+
         while True:
             phone = input("Phone(required): ").strip()
             if not phone:
@@ -464,7 +449,13 @@ class CommandHandler:
         return f"Phone {phone} removed from contact {name}."
 
     @input_error
-    def search_contacts(self, query: str) -> str:
+    def search_contacts(self) -> str:
+        while True:
+            query = input("Query string(required): ").strip()
+            if not query:
+                print("Query is required. Please enter a search value.\n")
+                continue
+            break
         exact_results = self.repository.search_contacts(query)
 
         if exact_results:
@@ -490,9 +481,7 @@ class CommandHandler:
         try:
             days_int = int(days)
         except ValueError:
-            raise ValueError(
-                f"Invalid number of days: {days}. Please provide a valid integer."
-            )
+            raise ValueError(f"Invalid number of days: {days}. Please provide a valid integer.")
 
         results = self.birthday_service.find_near(days_int)
 
@@ -622,55 +611,24 @@ class CommandHandler:
         return self.repository.notes_by_tags()
 
     def _handle_help(self):
-        header = Presenter.header("Available Commands:")
-
-        add_info = "add <name> [phone] [email] [address] [birthday]"
-        add_cmd = f"  {Presenter.info(add_info)}\n    Add or update a contact\n"
-
-        show_cmd = f"  {Presenter.info('show <name>')}\n    Show a specific contact\n"
-
-        all_cmd = f"  {Presenter.info('all')}\n    Show all contacts\n"
-
-        search_cmd = (
-            f"  {Presenter.info('search-contacts <query>')}\n"
-            f"    Search contacts by name, phone, or email\n"
-        )
-
-        change_cmd = (
-            f"  {Presenter.info('change <name> <old-phone> <new-phone>')}\n"
-            f"    Change a phone number\n"
-        )
-
-        rename_cmd = (
-            f"  {Presenter.info('rename <old-name> <new-name>')}\n"
-            f"    Rename a contact\n"
-        )
-
-        delete_cmd = f"  {Presenter.info('delete <name>')}\n    Delete a contact\n"
-
-        delete_phone_cmd = (
-            f"  {Presenter.info('delete-phone <name> <phone>')}\n"
-            f"    Delete a phone number from a contact\n"
-        )
-
-        birthdays_cmd = (
-            f"  {Presenter.info('birthdays <days>')}\n"
-            f"    Show contacts with birthdays within "
-            f"the specified number of days\n"
-        )
-
-        system_header = f"{Presenter.highlight('System:')}\n"
-
-        help_cmd = f"  {Presenter.info('help [command]')}\n    Show this help message\n"
-
-        exit_cmd = (
-            f"  {Presenter.info('exit / quit / close')}\n    Exit the application\n"
-        )
-
-        example = (
-            f"{Presenter.warning('Example:')} "
-            f"add John 1234567890 john@example.com '123 Main St' 01.01.1990\n"
-        )
+        header = Presenter.header("Address Book Commands:\n")
+        add_cmd = f"  {Presenter.info('add')} - Select add command to create new contact \n"
+        show_cmd = f"  {Presenter.info('show')} - Show a specific contact\n"
+        all_cmd = f"  {Presenter.info('all')} - Show all contacts\n"
+        search_cmd = f"  {Presenter.info('search-contacts')} - Search contacts by name, phone, or email\n"
+        change_cmd = f"  {Presenter.info('change')} - Change a one of options: Name, Phone, Email, Address, Birthday\n"
+        rename_cmd = f"  {Presenter.info('rename')} - Rename a contact\n"
+        delete_cmd = f"  {Presenter.info('delete')} - Delete a contact\n"
+        delete_phone_cmd = f"  {Presenter.info('delete-phone')} - Delete a phone number from a contact\n"
+        birthdays_cmd = f"  {Presenter.info('birthdays <days>')} - Show contacts with birthdays within the specified number of days\n"
+        notes_header = f"{Presenter.header('Notes Commands:')}\n"
+        note_add_cmd = f"  {Presenter.info('note-add or na')} - Create new text note\n"
+        note_delete_cmd = f"  {Presenter.info('note-del or nd')} - Delete note\n"
+        note_list_cmd = f"  {Presenter.info('note-list or ns')} - Show all notes\n"
+        note_edit_cmd = f"  {Presenter.info('note-edit or ne')} - Edit note\n"
+        system_header = f"{Presenter.header('System Commands:')}\n"
+        help_cmd = f"  {Presenter.info('help')} - Show this help message\n"
+        exit_cmd = f"  {Presenter.info('exit / quit / close')} - Exit the application\n"
 
         help_text = (
             header
@@ -683,10 +641,14 @@ class CommandHandler:
             + delete_cmd
             + delete_phone_cmd
             + birthdays_cmd
+            + notes_header
+            + note_add_cmd
+            + note_delete_cmd
+            + note_list_cmd
+            + note_edit_cmd
             + system_header
             + help_cmd
             + exit_cmd
-            + example
         )
 
         return help_text
