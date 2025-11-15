@@ -577,19 +577,44 @@ class CommandHandler:
 
     @input_error
     def note_edit(self, query=None):
-        while not query:
-            query = input("Enter a search string: ").strip()
+        while True:
+            notes, msg = self.repository.search_notes(query)
+            print(msg)
 
-        note = self.repository.find_note(query)
-        if not note:
-            return f"Note {query} not found"
+            query = input("Enter filter (empty to continue): ").strip()
+            if not query:
+                break
 
-        print(f"Edit note {note.text}")
-        new_text = None
-        while not new_text:
-            new_text = input("Enter a new text: ").strip()
+        if not notes:
+            return "No notes to edit. Edit cancelled."
+        
+        while True:
+            user_input = input(f"Enter the number of the note to edit (1-{len(notes)}, empty to stop): ").strip()
 
-        return self.repository.edit_note(note, new_text)
+            if not user_input:
+                return 'Edit cancelled.'
+
+            try:
+                index = int(user_input)
+                if not 1 <= index <= len(notes):
+                    print("Invalid number. Try again.")
+                    continue
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
+
+            note_to_edit = notes[index - 1]
+            break
+
+        print(self.repository.format_notes(note_to_edit, " Editing..."))
+        
+        new_text = input("Enter a new text (empty to continue): ").strip()
+
+        tags = input("Enter tags (comma-separated, optional): ").strip() 
+        if tags:
+            tags = [t.strip() for t in tags.split(",") if t.strip()]
+
+        return self.repository.edit_note(note_to_edit, new_text, tags)
 
     def _handle_help(self):
         header = Presenter.header("Available Commands:")

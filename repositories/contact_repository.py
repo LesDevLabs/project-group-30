@@ -101,10 +101,10 @@ class ContactRepository:
         if note not in self.notes:
             return "Note not found."
 
-        if new_text is not None:
+        if new_text is not None and len(new_text) > 0:
             note.text = new_text
 
-        if new_tags is not None:
+        if new_tags is not None and len(new_tags) > 0:
             note.tags = new_tags
 
-        return f"Note {note.text} updated"
+        return self.format_notes(note, ' Note updated:')
