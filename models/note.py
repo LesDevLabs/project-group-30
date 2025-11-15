@@ -10,7 +10,7 @@ class Note:
         else:
             self.tags = list(tags)
 
-        # Опціонально — привести теги до нижнього регістру
+        # Optionally — convert tags to lowercase
         # self.tags = [t.lower() for t in self.tags]
 
     def to_dict(self):

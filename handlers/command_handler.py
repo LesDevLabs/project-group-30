@@ -57,26 +57,26 @@ class CommandHandler:
         else:
             return Presenter.warning("Contact already exist, please use update to modify")
 
-        # Обработка телефона с повторным вводом при ошибке
+        # Handle phone with retry on error
         while True:
             phone = input(Presenter.info("Phone (optional): ") + Presenter.format_hint("[380XXXXXXXXX]") + ": ").strip()
             if not phone:
-                break  # Пропускаем если пусто
+                break  # Skip if empty
             try:
                 contact.add_phone(phone)
-                break  # Успешно добавлен
+                break  # Successfully added
             except Exception as e:
                 print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue
 
-        # Обработка email с повторным вводом при ошибке
+        # Handle email with retry on error
         while True:
             email = input(Presenter.info("Email (optional): ")).strip()
             if not email:
-                break  # Пропускаем если пусто
+                break  # Skip if empty
             try:
                 contact.add_email(email)
-                break  # Успешно добавлен
+                break  # Successfully added
             except Exception as e:
                 print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue
@@ -85,14 +85,14 @@ class CommandHandler:
         if address:
             contact.set_address(address)
 
-        # Обработка дня рождения с повторным вводом при ошибке
+        # Handle birthday with retry on error
         while True:
             birthday = input(Presenter.info("Birthday (optional): ") + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
             if not birthday:
-                break  # Пропускаем если пусто
+                break  # Skip if empty
             try:
                 contact.set_birthday(birthday)
-                break  # Успешно добавлен
+                break  # Successfully added
             except Exception as e:
                 print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue

@@ -131,7 +131,7 @@ class ContactRepository:
             output_lines.append(f"Tag: {tag}")
             for note in tag_map[tag]:
                 output_lines.append(f"  {note}")
-            output_lines.append("")  # пустая строка между тегами
+            output_lines.append("")  # empty line between tags
 
         if no_tag_notes:
             output_lines.append("No tags:")

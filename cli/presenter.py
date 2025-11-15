@@ -170,7 +170,7 @@ class Presenter:
         # Print each birthday
         for idx, result in enumerate(results, 1):
             # Prepare data
-            jubilee = " (BIG JUBILEE)" if result['jubilee_type'] == "большой юбилей" else " (Jubilee)" if result['is_jubilee'] else ""
+            jubilee = " (BIG JUBILEE)" if result['jubilee_type'] == "big jubilee" else " (Jubilee)" if result['is_jubilee'] else ""
             age_display = f"{result['age']} years{jubilee}"
             phone = result['phone'] if result['phone'] else '-'
             email = result['email'] if result['email'] else '-'
@@ -188,7 +188,7 @@ class Presenter:
         
         # Statistics
         jubilees = sum(1 for r in results if r['is_jubilee'])
-        big_jubilees = sum(1 for r in results if r['jubilee_type'] == 'большой юбилей')
+        big_jubilees = sum(1 for r in results if r['jubilee_type'] == 'big jubilee')
         shifted = sum(1 for r in results if r['is_shifted'])
         
         stats = f"Total: {len(results)} birthdays"
