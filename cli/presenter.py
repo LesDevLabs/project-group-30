@@ -69,7 +69,6 @@ class Presenter:
         print(Presenter.header(message))
 
     @staticmethod
-
     def print_contacts_table(contacts):
         """Print contacts in a formatted table with colors"""
         if not contacts:
