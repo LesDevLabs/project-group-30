@@ -24,7 +24,7 @@ class CommandHandler:
             "note-list": self.note_list,
             "nl": self.note_list,
             "ne": self.note_edit,
-            "n-edit": self.note_edit,
+            "note-edit": self.note_edit,
             "tag": self.tag,
             "search-contacts": self.search_contacts,
             "birthdays": self.show_birthdays,
