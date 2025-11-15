@@ -1,4 +1,5 @@
 from handlers.errors import ValidationError
+from cli.presenter import Presenter
 
 
 def input_error(func):
@@ -6,13 +7,13 @@ def input_error(func):
         try:
             return func(*args, **kwargs)
         except ValidationError as e:
-            return f"Validation Error: {e}"
+            return Presenter.error(f"Validation Error: {e}")
         except KeyError as e:
-            return f"Error: {e}"
+            return Presenter.error(f"Error: {e}")
         except ValueError as e:
-            return f"ValueError: {e}"
+            return Presenter.error(f"ValueError: {e}")
         except AttributeError:
-            return "Error: Contact not found."
+            return Presenter.error("Error: Contact not found.")
         except Exception as e:
-            return f"Unexpected Error: {e}"
+            return Presenter.error(f"Unexpected Error: {e}")
     return wrapper
