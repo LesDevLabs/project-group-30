@@ -64,16 +64,18 @@ class ContactRepository:
         return None
 
     def search_notes(self, query=""):
+        header = f"Notes matching filter: {query}" if query else "All notes"
+
         if not query:
-            return self.notes
+            res = self.notes
+        else:
+            query = query.lower().strip()
+            res = [
+                note for note in self.notes
+                if query in note.text.lower() or any(query in tag.lower() for tag in note.tags)
+            ]
 
-        query = query.lower().strip()
-        results = [
-            note for note in self.notes
-            if query in note.text.lower() or any(query in tag.lower() for tag in note.tags)
-        ]
-
-        return results
+        return (res, self.format_notes(res, header))
 
     def format_notes(self, notes, header=""):
         if notes is None or (isinstance(notes, list) and not notes):

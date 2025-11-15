@@ -578,16 +578,13 @@ class CommandHandler:
     @input_error
     def note_list(self, query=None):
         while True:
-            notes = self.repository.search_notes(query)
-            if notes:
-                header = f"Notes matching filter: {query}" if query else "All notes"
-                print(self.repository.format_notes(notes, header))
-            else:
-                print("No notes to show.")
+            notes, msg = self.repository.search_notes(query)
+            print(msg)
 
             query = input("Enter filter (empty to stop): ").strip()
             if not query:
                 break
+            
         return ''
 
     @input_error
