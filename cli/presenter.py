@@ -193,4 +193,78 @@ class Presenter:
         
         print(f"{Fore.CYAN}{stats}{Style.RESET_ALL}\n")
 
+    @staticmethod
+    def print_help_table():
+        """Print help commands in a formatted table with colors"""
+        
+        # Header
+        print(f"\n{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{Style.BRIGHT}{'Command':<45} {'Description':<70}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        
+        # Category: Contact Management
+        print(f"\n{Fore.MAGENTA}{Style.BRIGHT}Contact Management:{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        commands_contacts = [
+            ("add", "Add or update a contact (interactive mode)"),
+            ("show <name>", "Show a specific contact"),
+            ("all", "Show all contacts"),
+            ("search-contacts <query>", "Search contacts by name, phone, or email"),
+            ("change", "Change contact information (interactive menu)"),
+            ("rename", "Rename a contact"),
+            ("delete <name>", "Delete a contact"),
+            ("delete-phone <name> <phone>", "Delete a phone number from a contact"),
+        ]
+        
+        for cmd, desc in commands_contacts:
+            print(f"{Fore.YELLOW}{cmd:<45}{Style.RESET_ALL} {Fore.GREEN}{desc}{Style.RESET_ALL}")
+        
+        # Category: Birthdays
+        print(f"\n{Fore.MAGENTA}{Style.BRIGHT}Birthdays:{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        commands_birthdays = [
+            ("birthdays <days>", "Show contacts with birthdays within the specified number of days"),
+        ]
+        
+        for cmd, desc in commands_birthdays:
+            print(f"{Fore.YELLOW}{cmd:<45}{Style.RESET_ALL} {Fore.GREEN}{desc}{Style.RESET_ALL}")
+        
+        # Category: Notes
+        print(f"\n{Fore.MAGENTA}{Style.BRIGHT}Notes:{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        commands_notes = [
+            ("note-add, na", "Add a note"),
+            ("note-del, nd", "Delete a note"),
+            ("note-list, nl", "Show list of notes (with filtering)"),
+            ("note-edit, ne", "Edit a note"),
+        ]
+        
+        for cmd, desc in commands_notes:
+            print(f"{Fore.YELLOW}{cmd:<45}{Style.RESET_ALL} {Fore.GREEN}{desc}{Style.RESET_ALL}")
+        
+        # Category: System
+        print(f"\n{Fore.MAGENTA}{Style.BRIGHT}System:{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        commands_system = [
+            ("help", "Show this help message"),
+            ("exit / quit / close", "Exit the application"),
+        ]
+        
+        for cmd, desc in commands_system:
+            print(f"{Fore.YELLOW}{cmd:<45}{Style.RESET_ALL} {Fore.GREEN}{desc}{Style.RESET_ALL}")
+        
+        print(f"{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        
+        # Usage examples
+        print(f"\n{Fore.CYAN}{Style.BRIGHT}Usage Examples:{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  add                          {Fore.CYAN}→ Interactive contact addition{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  show John                    {Fore.CYAN}→ Show contact John{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  search-contacts John         {Fore.CYAN}→ Find contacts with 'John'{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  birthdays 7                  {Fore.CYAN}→ Birthdays in the next 7 days{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}  note-add                     {Fore.CYAN}→ Add a new note{Style.RESET_ALL}\n")
+
     
