@@ -453,18 +453,29 @@ class CommandHandler:
         if not record:
             raise KeyError(f"Contact {name} not found.")
 
-        print(f"{record} \n")
+        Presenter.print_contacts_table([record])
+
+        if (len(record.phones) == 0):
+            return Presenter.error(
+                "This contact doesn’t have a phone number. Nothing to delete."
+                )
 
         while True:
-            phone = input(Presenter.info("Phone (required): ")).strip()
+            phone = input(
+                Presenter.info("Phone to delete(required): ")
+                ).strip()
             if not phone:
-                print(Presenter.error("Phone is required. Please enter a value."))
+                print(
+                    Presenter.error("Phone is required. Please enter a value.")
+                    )
                 continue
             break
 
         phone_obj = record.find_phone(phone)
         if not phone_obj:
-            raise ValueError(f"Phone {phone} not found for contact {name}.")
+            return Presenter.error(
+                f"Phone {phone} not found for contact {name}."
+                )
 
         record.remove_phone(phone)
         return Presenter.success(f"Phone {phone} removed from contact {name}.")
