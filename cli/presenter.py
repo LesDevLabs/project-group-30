@@ -126,4 +126,48 @@ class Presenter:
 {Fore.YELLOW}Example:{Style.RESET_ALL} add John 1234567890 john@example.com '123 Main St' 01.01.1990
 """
         print(welcome)
+    
+    @staticmethod
+    def print_birthdays_table(results: list[dict], days: int):
+        """Print birthdays in a formatted table with colors"""
+        if not results:
+            print(Presenter.warning(f"No contacts have birthdays in the next {days} days."))
+            return
+        
+        # Header
+        print(f"\n{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{Style.BRIGHT}{'#':<4} {'Name':<20} {'Birthday Information':<90}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        
+        # Print each birthday
+        for idx, result in enumerate(results, 1):
+            # Prepare data
+            jubilee = " (BIG JUBILEE)" if result['jubilee_type'] == "большой юбилей" else " (Jubilee)" if result['is_jubilee'] else ""
+            age_display = f"{result['age']} years{jubilee}"
+            phone = result['phone'] if result['phone'] else '-'
+            email = result['email'] if result['email'] else '-'
+            birthday_display = f"{result['actual_birthday_weekday']} {result['actual_birthday_date']}" if result['is_shifted'] else f"{result['weekday']} {result['date']}"
+            
+            # Print birthday info
+            print(f"{Fore.YELLOW}{idx:<4}{Style.RESET_ALL} {Fore.MAGENTA}{result['name']:<20}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Age:{Style.RESET_ALL}        {Fore.GREEN}{age_display}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Birthday:{Style.RESET_ALL}   {Fore.GREEN}{birthday_display}{Style.RESET_ALL}")
+            if result['is_shifted']:
+                print(f"{'':26}{Fore.CYAN}Congratulate:{Style.RESET_ALL} {Fore.GREEN}{result['weekday']} {result['date']} (shifted from {result['shift_reason']}){Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Phone:{Style.RESET_ALL}      {Fore.GREEN}{phone}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Email:{Style.RESET_ALL}      {Fore.GREEN}{email}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        # Statistics
+        jubilees = sum(1 for r in results if r['is_jubilee'])
+        big_jubilees = sum(1 for r in results if r['jubilee_type'] == 'большой юбилей')
+        shifted = sum(1 for r in results if r['is_shifted'])
+        
+        stats = f"Total: {len(results)} birthdays"
+        if jubilees:
+            stats += f" | Jubilees: {jubilees} ({big_jubilees} big, {jubilees - big_jubilees} regular)"
+        if shifted:
+            stats += f" | Weekend shifts: {shifted}"
+        
+        print(f"{Fore.CYAN}{stats}{Style.RESET_ALL}\n")
 

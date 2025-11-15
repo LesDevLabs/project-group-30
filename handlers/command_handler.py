@@ -217,27 +217,8 @@ class CommandHandler:
             )
 
         results = self.birthday_service.find_near(days_int)
-
-        if not results:
-            return Presenter.warning(
-                f"No contacts have birthdays in the next {days_int} days."
-            )
-
-        lines = [
-            Presenter.info(f"Contacts with birthdays in the next {days_int} days:")
-        ]
-        for result in results:
-            contact_info = f"  {result['name']}"
-            if result['phone']:
-                contact_info += f" - Phone: {result['phone']}"
-            if result['email']:
-                contact_info += f" - Email: {result['email']}"
-            contact_info += (
-                f" - Birthday: {result['date']} ({result['weekday']})"
-            )
-            lines.append(contact_info)
-
-        return "\n".join(lines)
+        Presenter.print_birthdays_table(results, days_int)
+        return ""
 
     def _handle_help(self):
         header = Presenter.header("Available Commands:")
