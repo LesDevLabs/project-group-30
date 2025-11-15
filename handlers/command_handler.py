@@ -36,12 +36,9 @@ class CommandHandler:
 
     @input_error
     def add_contact(self):
-        print(Presenter.info(
-            "Let's create a new contact. "
-            "Name is required. Other fields are optional"
-        ))
+        print(Presenter.info("Let's create a new contact. Name is required. Other fields are optional"))
         print(Presenter.info("Press Enter to skip any optional field."))
-     
+
         while True:
             name = input(Presenter.highlight("Name (required): ")).strip()
             if not name:
@@ -87,7 +84,9 @@ class CommandHandler:
 
         # Обработка дня рождения с повторным вводом при ошибке
         while True:
-            birthday = input(Presenter.info("Birthday (optional): ") + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
+            birthday = input(
+                Presenter.info("Birthday (optional): ") + Presenter.format_hint("[dd.mm.yyyy]") + ": "
+            ).strip()
             if not birthday:
                 break  # Пропускаем если пусто
             try:
@@ -122,7 +121,7 @@ class CommandHandler:
         if not contacts:
             return Presenter.warning("No contacts stored.")
         Presenter.print_contacts_table(contacts)
-        return "" 
+        return ""
 
     @input_error
     def change(self) -> str:
@@ -207,17 +206,13 @@ class CommandHandler:
         """Handle phone editing"""
         if not contact.phones:
             print(Presenter.info("This contact has no phone numbers."))
-            add_new = (
-                input("Would you like to add a new phone? (y/n): ").strip().lower()
-            )
+            add_new = input("Would you like to add a new phone? (y/n): ").strip().lower()
             # Allow Enter to cancel
             if not add_new:
                 return None
             if add_new == "y":
                 while True:
-                    new_phone = input(
-                        "Enter new phone " + Presenter.format_hint("[380XXXXXXXXX]") + ": "
-                    ).strip()
+                    new_phone = input("Enter new phone " + Presenter.format_hint("[380XXXXXXXXX]") + ": ").strip()
                     # Allow Enter to cancel
                     if not new_phone:
                         return None
@@ -253,8 +248,7 @@ class CommandHandler:
                     else:
                         print(
                             Presenter.error(
-                                f"Invalid selection. Please enter a number "
-                                f"between 1 and {len(contact.phones)}."
+                                f"Invalid selection. Please enter a number between 1 and {len(contact.phones)}."
                             )
                         )
                         continue
@@ -278,9 +272,7 @@ class CommandHandler:
                 return None
             try:
                 contact.edit_phone(old_phone, new_phone)
-                return Presenter.success(
-                    f"Phone number for {name} changed from {old_phone} to {new_phone}."
-                )
+                return Presenter.success(f"Phone number for {name} changed from {old_phone} to {new_phone}.")
             except Exception as e:
                 print(Presenter.error(f"Error: {e}. Please try again."))
                 continue
@@ -290,9 +282,7 @@ class CommandHandler:
         """Handle email editing"""
         if not contact.emails:
             print(Presenter.info("This contact has no email addresses."))
-            add_new = (
-                input("Would you like to add a new email? (y/n): ").strip().lower()
-            )
+            add_new = input("Would you like to add a new email? (y/n): ").strip().lower()
             # Allow Enter to cancel
             if not add_new:
                 return None
@@ -334,8 +324,7 @@ class CommandHandler:
                     else:
                         print(
                             Presenter.error(
-                                f"Invalid selection. Please enter a number "
-                                f"between 1 and {len(contact.emails)}."
+                                f"Invalid selection. Please enter a number between 1 and {len(contact.emails)}."
                             )
                         )
                         continue
@@ -449,7 +438,7 @@ class CommandHandler:
             return Presenter.success(f"Contact {name} deleted successfully.")
         else:
             return Presenter.info("Cancelled. Returning to main menu.")
-        
+
     @input_error
     def delete_phone(self) -> str:
         """Delete a phone number from a contact"""
@@ -511,9 +500,7 @@ class CommandHandler:
         try:
             days_int = int(days)
         except ValueError:
-            raise ValueError(
-                f"Invalid number of days: {days}. Please provide a valid integer."
-            )
+            raise ValueError(f"Invalid number of days: {days}. Please provide a valid integer.")
         results = self.birthday_service.find_near(days_int)
         Presenter.print_birthdays_table(results, days_int)
         return ""
@@ -549,7 +536,7 @@ class CommandHandler:
 
         if not notes:
             return "No notes to delete. Deletion cancelled."
-        
+
         while True:
             user_input = input(f"Enter the number of the note to delete (1-{len(notes)}, empty to stop): ").strip()
 
@@ -568,8 +555,8 @@ class CommandHandler:
             note_to_delete = notes[index - 1]
             print(self.repository.del_note(note_to_delete))
             break
-        
-        return ''
+
+        return ""
 
     @input_error
     def note_list(self, query=None):
@@ -581,7 +568,7 @@ class CommandHandler:
             if not query:
                 break
 
-        return ''
+        return ""
 
     @input_error
     def note_edit(self, query=None):
@@ -595,12 +582,12 @@ class CommandHandler:
 
         if not notes:
             return "No notes to edit. Edit cancelled."
-        
+
         while True:
             user_input = input(f"Enter the number of the note to edit (1-{len(notes)}, empty to stop): ").strip()
 
             if not user_input:
-                return 'Edit cancelled.'
+                return "Edit cancelled."
 
             try:
                 index = int(user_input)
@@ -615,10 +602,10 @@ class CommandHandler:
             break
 
         print(self.repository.format_notes(note_to_edit, " Editing..."))
-        
+
         new_text = input("Enter a new text (empty to continue): ").strip()
 
-        tags = input("Enter tags (comma-separated, optional): ").strip() 
+        tags = input("Enter tags (comma-separated, optional): ").strip()
         if tags:
             tags = [t.strip() for t in tags.split(",") if t.strip()]
 

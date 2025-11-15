@@ -25,7 +25,9 @@ def main():
 
     command_handler = CommandHandler(repository)
     command_suggester = CommandSuggester()
-    prompt_manager = PromptManager(commands=CommandSuggester.AVAILABLE_COMMANDS)
+    prompt_manager = PromptManager(
+        commands=CommandSuggester.AVAILABLE_COMMANDS
+        )
 
     # Display welcome message
     Presenter.print_welcome()
@@ -44,7 +46,9 @@ def main():
                     if command_handler[command]:
                         print(command_handler[command](*args))
                     else:
-                        print(command_suggester.get_suggestion_message(command))
+                        print(
+                            command_suggester.get_suggestion_message(command)
+                            )
                 else:
                     print('Please enter a command or use "help"')
 
