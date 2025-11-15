@@ -25,6 +25,7 @@ class CommandHandler:
             "nl": self.note_list,
             "ne": self.note_edit,
             "n-edit": self.note_edit,
+            "tag": self.tag,
             "search-contacts": self.search_contacts,
             "birthdays": self.show_birthdays,
             "help": self._handle_help,
@@ -511,49 +512,114 @@ class CommandHandler:
         return "\n".join(lines)
 
     @input_error
-    def note_add(self, text=None):
+    def note_add(self, text=None, tags=None):
         while not text:
             text = input("Enter text: ").strip()
 
-        note = Note(text)
+        if tags is None:
+            raw = input("Enter tags (comma-separated, optional): ").strip()
+            if raw:
+                tags = [t.strip() for t in raw.split(",") if t.strip()]
+            else:
+                tags = []
+        else:
+            if isinstance(tags, str):
+                tags = [t.strip() for t in tags.split(",") if t.strip()]
+
+        note = Note(text, tags)
+
         return self.repository.add_note(note)
 
     @input_error
     def note_del(self, query=None):
-        while not query:
-            query = input("Enter a search string: ").strip()
+        while True:
+            notes, msg = self.repository.search_notes(query)
+            print(msg)
 
-        note = self.repository.find_note(query)
+            query = input("Enter filter (empty to continue): ").strip()
+            if not query:
+                break
 
-        if not note:
-            return f"Note {query} not found"
+        if not notes:
+            return "No notes to delete. Deletion cancelled."
+        
+        while True:
+            user_input = input(f"Enter the number of the note to delete (1-{len(notes)}, empty to stop): ").strip()
 
-        return self.repository.del_note(note)
+            if not user_input:
+                break
+
+            try:
+                index = int(user_input)
+                if not 1 <= index <= len(notes):
+                    print("Invalid number. Try again.")
+                    continue
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
+
+            note_to_delete = notes[index - 1]
+            print(self.repository.del_note(note_to_delete))
+            break
+        
+        return ''
 
     @input_error
     def note_list(self, query=None):
-        notes = self.repository.search_notes(query)
+        while True:
+            notes, msg = self.repository.search_notes(query)
+            print(msg)
 
-        if notes and not query:
-            print("Use n-list <string> for filter notes")
+            query = input("Enter filter (empty to stop): ").strip()
+            if not query:
+                break
 
-        return self.repository.format_notes(notes)
+        return ''
 
     @input_error
     def note_edit(self, query=None):
-        while not query:
-            query = input("Enter a search string: ").strip()
+        while True:
+            notes, msg = self.repository.search_notes(query)
+            print(msg)
 
-        note = self.repository.find_note(query)
-        if not note:
-            return f"Note {query} not found"
+            query = input("Enter filter (empty to continue): ").strip()
+            if not query:
+                break
 
-        print(f"Edit note {note.text}")
-        new_text = None
-        while not new_text:
-            new_text = input("Enter a new text: ").strip()
+        if not notes:
+            return "No notes to edit. Edit cancelled."
+        
+        while True:
+            user_input = input(f"Enter the number of the note to edit (1-{len(notes)}, empty to stop): ").strip()
 
-        return self.repository.edit_note(note, new_text)
+            if not user_input:
+                return 'Edit cancelled.'
+
+            try:
+                index = int(user_input)
+                if not 1 <= index <= len(notes):
+                    print("Invalid number. Try again.")
+                    continue
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
+
+            note_to_edit = notes[index - 1]
+            break
+
+        print(self.repository.format_notes(note_to_edit, " Editing..."))
+        
+        new_text = input("Enter a new text (empty to continue): ").strip()
+
+        tags = input("Enter tags (comma-separated, optional): ").strip() 
+        if tags:
+            tags = [t.strip() for t in tags.split(",") if t.strip()]
+
+        return self.repository.edit_note(note_to_edit, new_text, tags)
+
+    @input_error
+    def tag(self):
+        return self.repository.notes_by_tags()
 
     def _handle_help(self):
         header = Presenter.header("Available Commands:")

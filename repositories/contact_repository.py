@@ -1,4 +1,7 @@
+from collections import defaultdict
+
 from models.contact import Record
+from models.note import Note
 
 from search.search_service import SearchService
 
@@ -41,7 +44,7 @@ class ContactRepository:
     # --- Notes ---
     def add_note(self, note):
         self.notes.append(note)
-        return f"Note {note.text} added"
+        return self.format_notes(note, " Note added:")
 
     def del_note(self, note):
         if note not in self.notes:
@@ -51,12 +54,11 @@ class ContactRepository:
 
         self.notes.remove(note)
 
-        return f"Note: {deleted_text} deleted"
+        return self.format_notes(note, " Note deleted:")
 
     def find_note(self, query):
         query = query.lower().strip()
 
-        # Find first note matching query in text or tags
         for note in self.notes:
             if query in note.text.lower() or any(query in tag.lower() for tag in note.tags):
                 return note
@@ -64,26 +66,36 @@ class ContactRepository:
         return None
 
     def search_notes(self, query=""):
+        header = f"Notes matching filter: {query}" if query else "All notes"
+
         if not query:
-            return self.notes
+            res = self.notes
+        else:
+            query = query.lower().strip()
+            res = [
+                note for note in self.notes
+                if query in note.text.lower() or any(query in tag.lower() for tag in note.tags)
+            ]
 
-        query = query.lower().strip()
-        results = [
-            note for note in self.notes
-            if query in note.text.lower() or any(query in tag.lower() for tag in note.tags)
-        ]
+        return (res, self.format_notes(res, header))
 
-        return results
-
-    def format_notes(self, notes):
-        if not notes:
+    def format_notes(self, notes, header=""):
+        if notes is None or (isinstance(notes, list) and not notes):
             return "No notes to show."
 
-        lines = ["📘 Notes:"]
-        for i, n in enumerate(notes, start=1):
-            tags = ", ".join(n.tags) if n.tags else "none"
-            lines.append(f"{i}. {n.text}")
-            # lines.append(f"{i}. {n.text}  [tags: {tags}]")
+        if isinstance(notes, Note):
+            notes = [notes]
+
+        lines = []
+
+        if header:
+            lines.append(header)
+
+        if len(notes) == 1:
+            lines.append(str(notes[0]))
+        else:
+            for i, note in enumerate(notes, start=1):
+                lines.append(f"{i}. {str(note)}")
 
         return "\n".join(lines)
 
@@ -91,11 +103,42 @@ class ContactRepository:
         if note not in self.notes:
             return "Note not found."
 
-        if new_text is not None:
+        if new_text is not None and len(new_text) > 0:
             note.text = new_text
 
-        if new_tags is not None:
+        if new_tags is not None and len(new_tags) > 0:
             note.tags = new_tags
 
-        return f"Note {note.text} updated"
-        # return f"Note updated: {note.text} [tags: {', '.join(note.tags) if note.tags else 'none'}]"
+        return self.format_notes(note, ' Note updated:')
+
+    def notes_by_tags(self, notes=None):
+        if not notes:
+            notes = self.notes
+
+        tag_map = defaultdict(list)
+        no_tag_notes = []
+
+        for note in notes:
+            if note.tags:
+                for tag in note.tags:
+                    tag_map[tag].append(note)
+            else:
+                no_tag_notes.append(note)
+
+        output_lines = []
+
+        for tag in sorted(tag_map.keys()):
+            output_lines.append(f"Tag: {tag}")
+            for note in tag_map[tag]:
+                output_lines.append(f"  {note}")
+            output_lines.append("")  # пустая строка между тегами
+
+        if no_tag_notes:
+            output_lines.append("No tags:")
+            for note in no_tag_notes:
+                output_lines.append(f"  {note}")
+
+        if output_lines:
+            return "\n".join(output_lines)
+
+        return "No notes to show."
