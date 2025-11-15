@@ -15,6 +15,6 @@ class Phone(Field):
             raise ValidationError('phone', 'Expected only digits')
 
         if (len(formatted_phone) != 12):
-            raise ValidationError('phone', 'Phone number is not full')
+            raise ValidationError('phone', 'Invalid phone number. Format: 380XXXXXXXXX')
 
         self._value = phone

@@ -15,6 +15,7 @@ def normalize_phone(phone_number: str):
     else:
         return f'38{cleaned_phone_number}'
 
+
 def parse_user_input_data(user_input):
         cmd, *args = user_input.split()
         cmd = cmd.strip().lower()
