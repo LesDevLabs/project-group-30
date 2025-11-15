@@ -83,6 +83,48 @@ class BirthdayService:
         records = self._collect_records(days)
         return [self._format_record(record) for record in sorted(records)]
 
+    def find_on_date(self, target_date: str | date) -> list[dict[str, Any]]:
+        """Find contacts with birthdays on a specific date (ignoring year)."""
+        # Parse target date if it's a string
+        if isinstance(target_date, str):
+            try:
+                target_date = datetime.strptime(target_date, "%d.%m.%Y").date()
+            except ValueError:
+                raise ValueError(
+                    f"Invalid date format: {target_date}. Expected format: DD.MM.YYYY"
+                )
+        
+        records = []
+        today = date.today()
+        
+        for contact in self._repository.get_all_contacts():
+            if not contact.birthday:
+                continue
+            
+            try:
+                birth_date = self._extract_date(contact.birthday)
+                
+                # Check if day and month match (ignoring year)
+                if birth_date.day == target_date.day and birth_date.month == target_date.month:
+                    # Calculate the birthday in the current year or next year
+                    birthday_this_year = self._get_next_birthday(birth_date, today)
+                    
+                    records.append(BirthdayRecord(
+                        actual_birthday=birthday_this_year,
+                        contact=contact,
+                        original_birth_date=birth_date
+                    ))
+            except (TypeError, ValueError):
+                continue
+        
+        # Sort by name
+        records.sort(key=lambda r: r.contact.name.value.lower())
+        return [self._format_record(record) for record in records]
+
+    def find_today(self) -> list[dict[str, Any]]:
+        """Find contacts with birthdays today."""
+        return self.find_on_date(date.today())
+
     def _collect_records(self, days: int) -> list[BirthdayRecord]:
         """Collect contacts whose birthdays fall within the specified days."""
         records = []
