@@ -38,7 +38,7 @@ class CommandHandler:
         print("Let's create a new contact. Name is required. Other fields are optional")
         print("Press Enter to skip any optional field.\n")
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.highlight("Name (required): ")).strip()
             if not name:
                 print("Name is required. Please enter a name.\n")
                 continue
@@ -54,7 +54,7 @@ class CommandHandler:
 
         # Обработка телефона с повторным вводом при ошибке
         while True:
-            phone = input(Presenter.info("Phone (optional) ") + Presenter.format_hint("[380XXXXXXXXX]") + ": ").strip()
+            phone = input(Presenter.info("Phone (optional): ") + Presenter.format_hint("[380XXXXXXXXX]") + ": ").strip()
             if not phone:
                 break  # Пропускаем если пусто
             try:
@@ -82,7 +82,7 @@ class CommandHandler:
 
         # Обработка дня рождения с повторным вводом при ошибке
         while True:
-            birthday = input(Presenter.info("Birthday (optional) ") + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
+            birthday = input(Presenter.info("Birthday (optional): ") + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
             if not birthday:
                 break  # Пропускаем если пусто
             try:
