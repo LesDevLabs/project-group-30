@@ -9,12 +9,16 @@ __init__.py
 # C extensions
 *.so
 
+# remove local address book
+addressbook.pkl
+
 # Distribution / packaging
 .Python
 build/
 develop-eggs/
 dist/
 downloads/
+files/
 eggs/
 .eggs/
 lib/
