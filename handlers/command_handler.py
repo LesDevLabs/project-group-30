@@ -50,49 +50,49 @@ class CommandHandler:
             contact = Record(name)
             self.repository.add_contact(contact)
         else:
-            return "Contact already exist, please use update to modify"
+            return Presenter.warning("Contact already exist, please use update to modify")
 
         # Обработка телефона с повторным вводом при ошибке
         while True:
-            phone = input("Phone (optional, format: 380XXXXXXXXX): ").strip()
+            phone = input(Presenter.info("Phone (optional) ") + Presenter.format_hint("[380XXXXXXXXX]") + ": ").strip()
             if not phone:
                 break  # Пропускаем если пусто
             try:
                 contact.add_phone(phone)
                 break  # Успешно добавлен
             except Exception as e:
-                print(f"Error: {e}. Please try again or press Enter to skip.")
+                print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue
 
         # Обработка email с повторным вводом при ошибке
         while True:
-            email = input("Email (optional): ").strip()
+            email = input(Presenter.info("Email (optional): ")).strip()
             if not email:
                 break  # Пропускаем если пусто
             try:
                 contact.add_email(email)
                 break  # Успешно добавлен
             except Exception as e:
-                print(f"Error: {e}. Please try again or press Enter to skip.")
+                print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue
 
-        address = input("Address (optional): ").strip() or None
+        address = input(Presenter.info("Address (optional): ")).strip() or None
         if address:
             contact.set_address(address)
 
         # Обработка дня рождения с повторным вводом при ошибке
         while True:
-            birthday = input("Birthday (optional, dd.mm.yyyy): ").strip()
+            birthday = input(Presenter.info("Birthday (optional) ") + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
             if not birthday:
                 break  # Пропускаем если пусто
             try:
                 contact.set_birthday(birthday)
                 break  # Успешно добавлен
             except Exception as e:
-                print(f"Error: {e}. Please try again or press Enter to skip.")
+                print(Presenter.error(f"Error: {e}. Please try again or press Enter to skip."))
                 continue
 
-        return "Contact added."
+        return Presenter.success("Contact added.")
 
     @input_error
     def show_contact(self, name: str):
@@ -125,7 +125,7 @@ class CommandHandler:
                 return "Return to main menu"
 
             if choice not in ["1", "2", "3", "4", "5"]:
-                print("Invalid choice. Please enter a number from 1 to 6.\n")
+                print(Presenter.error("Invalid choice. Please enter a number from 1 to 6."))
                 continue
 
             # Get contact name
@@ -186,13 +186,13 @@ class CommandHandler:
         contact.name.value = new_name
         self.repository.add_contact(contact)
 
-        return f"Contact name changed from {current_name} to {new_name}."
+        return Presenter.success(f"Contact name changed from {current_name} to {new_name}.")
 
     @input_error
     def _change_phone(self, contact: Record, name: str) -> str:
         """Handle phone editing"""
         if not contact.phones:
-            print("This contact has no phone numbers.")
+            print(Presenter.info("This contact has no phone numbers."))
             add_new = (
                 input("Would you like to add a new phone? (y/n): ").strip().lower()
             )
@@ -202,19 +202,19 @@ class CommandHandler:
             if add_new == "y":
                 while True:
                     new_phone = input(
-                        "Enter new phone (format: +380XXXXXXXXX): "
+                        "Enter new phone " + Presenter.format_hint("[+380XXXXXXXXX]") + ": "
                     ).strip()
                     # Allow Enter to cancel
                     if not new_phone:
                         return None
                     try:
                         contact.add_phone(new_phone)
-                        return f"Phone {new_phone} added to contact {name}."
+                        return Presenter.success(f"Phone {new_phone} added to contact {name}.")
                     except Exception as e:
-                        print(f"Error: {e}. Please try again.")
+                        print(Presenter.error(f"Error: {e}. Please try again."))
                         continue
             else:
-                return "No changes made."
+                return Presenter.info("No changes made.")
 
         # Display existing phones
         print("\nExisting phone numbers:")
@@ -249,15 +249,15 @@ class CommandHandler:
                     if contact.find_phone(old_phone):
                         break
                     else:
-                        print(f"Phone {old_phone} not found. Please try again.")
+                        print(Presenter.error(f"Phone {old_phone} not found. Please try again."))
                         continue
             except Exception as e:
-                print(f"Error: {e}. Please try again.")
+                print(Presenter.error(f"Error: {e}. Please try again."))
                 continue
 
         # Get new phone
         while True:
-            new_phone = input("Enter new phone (format: +380XXXXXXXXX): ").strip()
+            new_phone = input("Enter new phone " + Presenter.format_hint("[+380XXXXXXXXX]") + ": ").strip()
             # Allow Enter to cancel
             if not new_phone:
                 return None
@@ -267,14 +267,14 @@ class CommandHandler:
                     f"Phone number for {name} changed from {old_phone} to {new_phone}."
                 )
             except Exception as e:
-                print(f"Error: {e}. Please try again.")
+                print(Presenter.error(f"Error: {e}. Please try again."))
                 continue
 
     @input_error
     def _change_email(self, contact: Record, name: str) -> str:
         """Handle email editing"""
         if not contact.emails:
-            print("This contact has no email addresses.")
+            print(Presenter.info("This contact has no email addresses."))
             add_new = (
                 input("Would you like to add a new email? (y/n): ").strip().lower()
             )
@@ -289,12 +289,12 @@ class CommandHandler:
                         return None
                     try:
                         contact.add_email(new_email)
-                        return f"Email {new_email} added to contact {name}."
+                        return Presenter.success(f"Email {new_email} added to contact {name}.")
                     except Exception as e:
-                        print(f"Error: {e}. Please try again.")
+                        print(Presenter.error(f"Error: {e}. Please try again."))
                         continue
             else:
-                return "No changes made."
+                return Presenter.info("No changes made.")
 
         # Display existing emails
         print("\nExisting email addresses:")
@@ -329,10 +329,10 @@ class CommandHandler:
                     if contact.find_email(old_email):
                         break
                     else:
-                        print(f"Email {old_email} not found. Please try again.")
+                        print(Presenter.error(f"Email {old_email} not found. Please try again."))
                         continue
             except Exception as e:
-                print(f"Error: {e}. Please try again.")
+                print(Presenter.error(f"Error: {e}. Please try again."))
                 continue
 
         # Get new email
@@ -343,51 +343,51 @@ class CommandHandler:
                 return None
             try:
                 contact.edit_email(old_email, new_email)
-                return f"Email for {name} changed from {old_email} to {new_email}."
+                return Presenter.success(f"Email for {name} changed from {old_email} to {new_email}.")
             except Exception as e:
-                print(f"Error: {e}. Please try again.")
+                print(Presenter.error(f"Error: {e}. Please try again."))
                 continue
 
     @input_error
     def _change_address(self, contact: Record, name: str) -> str:
         """Handle address editing"""
         if contact.address:
-            print(f"Current address: {contact.address.value}")
+            print(Presenter.info(f"Current address: {contact.address.value}"))
 
         new_address = input("Enter new address: ").strip()
         # Allow Enter to cancel
         if not new_address:
             return None
         contact.set_address(new_address)
-        return f"Address for {name} updated to: {new_address}."
+        return Presenter.success(f"Address for {name} updated to: {new_address}.")
 
     @input_error
     def _change_birthday(self, contact: Record, name: str) -> str:
         """Handle birthday editing"""
         if contact.birthday:
-            print(f"Current birthday: {contact.birthday}")
+            print(Presenter.info(f"Current birthday: {contact.birthday}"))
 
         while True:
-            birthday = input("Enter new birthday (dd.mm.yyyy): ").strip()
+            birthday = input("Enter new birthday " + Presenter.format_hint("[dd.mm.yyyy]") + ": ").strip()
             # Allow Enter to cancel
             if not birthday:
                 return None
 
             try:
                 contact.set_birthday(birthday)
-                return f"Birthday for {name} updated to: {birthday}."
+                return Presenter.success(f"Birthday for {name} updated to: {birthday}.")
             except Exception as e:
-                print(f"Error: {e}. Please try again.")
+                print(Presenter.error(f"Error: {e}. Please try again."))
                 continue
 
     @input_error
     def edit_name(self) -> str:
         """Rename a contact"""
-        print("Let's update contact name. Please enter contact name")
+        print(Presenter.info("Let's update contact name. Please enter contact name"))
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.info("Name (required): ")).strip()
             if not name:
-                print("Name is required. Please enter a name.\n")
+                print(Presenter.error("Name is required. Please enter a name."))
                 continue
             break
 
@@ -397,9 +397,9 @@ class CommandHandler:
             raise KeyError(f"Contact {name} not found.")
 
         while True:
-            new_name = input("New name(required): ").strip()
+            new_name = input(Presenter.info("New name (required): ")).strip()
             if not new_name:
-                print("New name is required. Please enter a name.")
+                print(Presenter.error("New name is required. Please enter a name."))
                 continue
             break
 
@@ -410,38 +410,38 @@ class CommandHandler:
         contact.name.value = new_name
         self.repository.add_contact(contact)
 
-        return f"Contact name changed from {name} to {new_name}."
+        return Presenter.success(f"Contact name changed from {name} to {new_name}.")
 
     @input_error
     def delete_contact(self):
         """Delete a contact"""
-        print("Let's delete contact name. Please enter contact name")
+        print(Presenter.info("Let's delete contact. Please enter contact name"))
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.info("Name (required): ")).strip()
             if not name:
-                print("Name is required. Please enter a name.\n")
+                print(Presenter.error("Name is required. Please enter a name."))
                 continue
             break
 
         record = self.repository.find_contact(name)
         if record is None:
             raise KeyError(f"Contact {name} not found.")
-        print("Let's delete contact name. Please enter contact name")
-        response = input("Do you really want to remove contact? (y/n): ").strip()
+        print(Presenter.warning("Do you really want to remove this contact?"))
+        response = input("(y/n): ").strip()
         if response == "y":
             self.repository.delete_contact(name)
-            return f"Contact {name} deleted successfully."
+            return Presenter.success(f"Contact {name} deleted successfully.")
         else:
-            return "Return to main menu"
+            return Presenter.info("Cancelled. Returning to main menu.")
 
     @input_error
     def delete_phone(self) -> str:
         """Delete a phone number from a contact"""
-        print("Let's delete phone number from contact. Please enter contact name")
+        print(Presenter.info("Let's delete phone number from contact. Please enter contact name"))
         while True:
-            name = input("Name(required): ").strip()
+            name = input(Presenter.info("Name (required): ")).strip()
             if not name:
-                print("Name is required. Please enter a name.\n")
+                print(Presenter.error("Name is required. Please enter a name."))
                 continue
             break
         record = self.repository.find_contact(name)
@@ -449,9 +449,9 @@ class CommandHandler:
             raise KeyError(f"Contact {name} not found.")
 
         while True:
-            phone = input("Phone(required): ").strip()
+            phone = input(Presenter.info("Phone (required): ")).strip()
             if not phone:
-                print("Phone is required. Please enter a value.\n")
+                print(Presenter.error("Phone is required. Please enter a value."))
                 continue
             break
 
@@ -460,7 +460,7 @@ class CommandHandler:
             raise ValueError(f"Phone {phone} not found for contact {name}.")
 
         record.remove_phone(phone)
-        return f"Phone {phone} removed from contact {name}."
+        return Presenter.success(f"Phone {phone} removed from contact {name}.")
 
     @input_error
     def search_contacts(self, query: str) -> str:
@@ -535,7 +535,7 @@ class CommandHandler:
         notes = self.repository.search_notes(query)
 
         if notes and not query:
-            print("Use n-list <string> for filter notes")
+            print(Presenter.info("Use n-list <string> for filter notes"))
 
         return self.repository.format_notes(notes)
 
@@ -548,7 +548,7 @@ class CommandHandler:
         if not note:
             return f"Note {query} not found"
 
-        print(f"Edit note {note.text}")
+        print(Presenter.info(f"Edit note {note.text}"))
         new_text = None
         while not new_text:
             new_text = input("Enter a new text: ").strip()

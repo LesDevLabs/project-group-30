@@ -44,6 +44,11 @@ class Presenter:
         return f"{Fore.MAGENTA}{message}{Style.RESET_ALL}"
 
     @staticmethod
+    def format_hint(text: str) -> str:
+        """Format hint text in light gray"""
+        return f"{Fore.WHITE}{Style.DIM}{text}{Style.RESET_ALL}"
+
+    @staticmethod
     def print_success(message: str):
         """Print success message"""
         print(Presenter.success(message))
