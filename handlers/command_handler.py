@@ -447,7 +447,13 @@ class CommandHandler:
         return f"Phone {phone} removed from contact {name}."
 
     @input_error
-    def search_contacts(self, query: str) -> str:
+    def search_contacts(self) -> str:
+        while True:
+            query = input("Query string(required): ").strip()
+            if not query:
+                print("Query is required. Please enter a search value.\n")
+                continue
+            break
         exact_results = self.repository.search_contacts(query)
 
         if exact_results:
@@ -547,9 +553,7 @@ class CommandHandler:
         rename_cmd = f"  {Presenter.info('rename')} - Rename a contact\n"
         delete_cmd = f"  {Presenter.info('delete')} - Delete a contact\n"
         delete_phone_cmd = f"  {Presenter.info('delete-phone')} - Delete a phone number from a contact\n"
-        birthdays_cmd = (
-            f"  {Presenter.info('birthdays <days>')} - Show contacts with birthdays within the specified number of days\n"
-        )
+        birthdays_cmd = f"  {Presenter.info('birthdays <days>')} - Show contacts with birthdays within the specified number of days\n"
         notes_header = f"{Presenter.header('Notes Commands:')}\n"
         note_add_cmd = f"  {Presenter.info('note-add or na')} - Create new text note\n"
         note_delete_cmd = f"  {Presenter.info('note-del or nd')} - Delete note\n"
