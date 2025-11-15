@@ -100,8 +100,15 @@ class CommandHandler:
         return Presenter.success("Contact added.")
 
     @input_error
-    def show_contact(self, name: str):
+    def show_contact(self):
         """Show a specific contact"""
+        while True:
+            name = input("Enter the name to show contact: ").strip()
+            # Allow Enter to cancel
+            if not name:
+                return None
+            break
+
         contact = self.repository.find_contact(name)
         if contact is None:
             raise KeyError(f"Contact {name} not found.")
