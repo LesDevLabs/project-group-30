@@ -69,76 +69,41 @@ class Presenter:
         print(Presenter.header(message))
 
     @staticmethod
-    def format_contact(contact_str: str) -> str:
-        """Format contact display with colors"""
-        lines = contact_str.split('\n')
-        formatted_lines = []
-        for line in lines:
-            if 'Contact name:' in line:
-                # Highlight contact name
-                parts = line.split('Contact name:')
-                if len(parts) == 2:
-                    formatted_lines.append(
-                        f"{Fore.CYAN}Contact name:{Style.RESET_ALL} "
-                        f"{Fore.MAGENTA}{parts[1].strip()}{Style.RESET_ALL}"
-                    )
-                else:
-                    formatted_lines.append(line)
-            elif 'phones:' in line:
-                parts = line.split('phones:')
-                if len(parts) == 2:
-                    formatted_lines.append(
-                        f"{Fore.CYAN}phones:{Style.RESET_ALL} "
-                        f"{Fore.GREEN}{parts[1].strip()}{Style.RESET_ALL}"
-                    )
-                else:
-                    formatted_lines.append(line)
-            elif 'emails:' in line:
-                parts = line.split('emails:')
-                if len(parts) == 2:
-                    formatted_lines.append(
-                        f"{Fore.CYAN}emails:{Style.RESET_ALL} "
-                        f"{Fore.GREEN}{parts[1].strip()}{Style.RESET_ALL}"
-                    )
-                else:
-                    formatted_lines.append(line)
-            elif 'address:' in line:
-                parts = line.split('address:')
-                if len(parts) == 2:
-                    formatted_lines.append(
-                        f"{Fore.CYAN}address:{Style.RESET_ALL} "
-                        f"{Fore.GREEN}{parts[1].strip()}{Style.RESET_ALL}"
-                    )
-                else:
-                    formatted_lines.append(line)
-            elif 'birthday:' in line:
-                parts = line.split('birthday:')
-                if len(parts) == 2:
-                    formatted_lines.append(
-                        f"{Fore.CYAN}birthday:{Style.RESET_ALL} "
-                        f"{Fore.GREEN}{parts[1].strip()}{Style.RESET_ALL}"
-                    )
-                else:
-                    formatted_lines.append(line)
-            else:
-                formatted_lines.append(line)
-        return '\n'.join(formatted_lines)
-    
-    @staticmethod
-    def print_contact(contact_str: str):
-        """Print formatted contact"""
-        print(Presenter.format_contact(contact_str))
-    
-    @staticmethod
-    def print_contacts_list(contacts_list: str):
-        """Print formatted list of contacts"""
-        if not contacts_list or contacts_list == "No contacts stored.":
-            print(Presenter.info(contacts_list))
+
+    def print_contacts_table(contacts):
+        """Print contacts in a formatted table with colors"""
+        if not contacts:
+            print(Presenter.info("No contacts stored."))
             return
         
-        contacts = contacts_list.split('\n')
-        for i, contact in enumerate(contacts, 1):
-            print(f"{Fore.YELLOW}[{i}]{Style.RESET_ALL} {Presenter.format_contact(contact)}")
+        # Header
+        print(f"\n{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{Style.BRIGHT}{'#':<4} {'Name':<20} {'Contact Information':<90}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        
+        # Print each contact
+        for idx, contact in enumerate(contacts, 1):
+            # Get all phones in one line
+            phones = '; '.join(p.value for p in contact.phones) if contact.phones else '-'
+            
+            # Get all emails in one line
+            emails = '; '.join(e.value for e in contact.emails) if contact.emails else '-'
+            
+            # Get address
+            address = contact.address.value if contact.address else '-'
+            
+            # Get birthday
+            birthday = str(contact.birthday) if contact.birthday else '-'
+            
+            # Print contact info
+            print(f"{Fore.YELLOW}{idx:<4}{Style.RESET_ALL} {Fore.MAGENTA}{contact.name.value:<20}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Phones:{Style.RESET_ALL}   {Fore.GREEN}{phones}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Emails:{Style.RESET_ALL}   {Fore.GREEN}{emails}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Address:{Style.RESET_ALL}  {Fore.GREEN}{address}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Birthday:{Style.RESET_ALL} {Fore.GREEN}{birthday}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        print(f"{Fore.CYAN}Total contacts: {len(contacts)}{Style.RESET_ALL}\n")
     
     @staticmethod
     def print_prompt():
@@ -147,24 +112,86 @@ class Presenter:
 
     @staticmethod
     def print_welcome():
-        """Print welcome message"""
-        welcome = f"""
-{Fore.BLUE}{Style.BRIGHT}{'='*50}
-  Welcome to the Personal Assistant!
-{'='*50}{Style.RESET_ALL}
-{Fore.CYAN}Commands:{Style.RESET_ALL}
-  {Fore.GREEN}add{Style.RESET_ALL}          - Add or update a contact
-  {Fore.GREEN}show{Style.RESET_ALL}         - Show a specific contact
-  {Fore.GREEN}all{Style.RESET_ALL}          - Show all contacts
-  {Fore.GREEN}search-contacts{Style.RESET_ALL} - Search contacts
-  {Fore.GREEN}change{Style.RESET_ALL}       - Change phone number
-  {Fore.GREEN}rename{Style.RESET_ALL}       - Rename a contact
-  {Fore.GREEN}delete{Style.RESET_ALL}       - Delete a contact
-  {Fore.GREEN}delete-phone{Style.RESET_ALL} - Delete a phone number
-  {Fore.GREEN}help{Style.RESET_ALL}         - Show help
-  {Fore.GREEN}exit{Style.RESET_ALL}         - Exit application
+        """Print welcome message using TableRenderer"""
+        console = Console()
+        renderer = TableRenderer()
+        commands_data = [
+            ["add", "Add or update a contact"],
+            ["show", "Show a specific contact"],
+            ["all", "Show all contacts"],
+            ["search-contacts", "Search contacts"],
+            ["change", "Change contact information"],
+            ["rename", "Rename a contact"],
+            ["delete", "Delete a contact"],
+            ["delete-phone", "Delete a phone number"],
+            ["note-add, na", "Add note"],
+            ["note-del, nd", "Delete note"],
+            ["note-list, nl", "List note(s)"],
+            ["note-edit, ne", "Edit note"],
+            ["help", "Show help"],
+            ["exit", "Exit application"],
+        ]
 
-{Fore.YELLOW}Example:{Style.RESET_ALL} add John 1234567890 john@example.com '123 Main St' 01.01.1990
-"""
-        print(welcome)
+        columns = [
+            {"name": "Command", "style": "green", "width": 24},
+            {"name": "Description", "style": "white", "width": 30},
+        ]
+        
+        console.print()
+        console.print(
+            Panel(
+                "",
+                title="[bold cyan]Welcome to Personal Assistant![/bold cyan]",
+                subtitle="[yellow]Type 'help' for more information[/yellow]",
+                border_style="cyan",
+            )
+        )
+        console.print()
+        renderer.render(title="Available Commands", columns=columns, rows=commands_data)
+        console.print()
+    
+    @staticmethod
+    def print_birthdays_table(results: list[dict], days: int):
+        """Print birthdays in a formatted table with colors"""
+        if not results:
+            print(Presenter.warning(f"No contacts have birthdays in the next {days} days."))
+            return
+        
+        # Header
+        print(f"\n{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{Style.BRIGHT}{'#':<4} {'Name':<20} {'Birthday Information':<90}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{Style.BRIGHT}{'='*120}{Style.RESET_ALL}")
+        
+        # Print each birthday
+        for idx, result in enumerate(results, 1):
+            # Prepare data
+            jubilee = " (BIG JUBILEE)" if result['jubilee_type'] == "большой юбилей" else " (Jubilee)" if result['is_jubilee'] else ""
+            age_display = f"{result['age']} years{jubilee}"
+            phone = result['phone'] if result['phone'] else '-'
+            email = result['email'] if result['email'] else '-'
+            birthday_display = f"{result['actual_birthday_weekday']} {result['actual_birthday_date']}" if result['is_shifted'] else f"{result['weekday']} {result['date']}"
+            
+            # Print birthday info
+            print(f"{Fore.YELLOW}{idx:<4}{Style.RESET_ALL} {Fore.MAGENTA}{result['name']:<20}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Age:{Style.RESET_ALL}        {Fore.GREEN}{age_display}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Birthday:{Style.RESET_ALL}   {Fore.GREEN}{birthday_display}{Style.RESET_ALL}")
+            if result['is_shifted']:
+                print(f"{'':26}{Fore.CYAN}Congratulate:{Style.RESET_ALL} {Fore.GREEN}{result['weekday']} {result['date']} (shifted from {result['shift_reason']}){Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Phone:{Style.RESET_ALL}      {Fore.GREEN}{phone}{Style.RESET_ALL}")
+            print(f"{'':26}{Fore.CYAN}Email:{Style.RESET_ALL}      {Fore.GREEN}{email}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{'-'*120}{Style.RESET_ALL}")
+        
+        # Statistics
+        jubilees = sum(1 for r in results if r['is_jubilee'])
+        big_jubilees = sum(1 for r in results if r['jubilee_type'] == 'большой юбилей')
+        shifted = sum(1 for r in results if r['is_shifted'])
+        
+        stats = f"Total: {len(results)} birthdays"
+        if jubilees:
+            stats += f" | Jubilees: {jubilees} ({big_jubilees} big, {jubilees - big_jubilees} regular)"
+        if shifted:
+            stats += f" | Weekend shifts: {shifted}"
+        
+        print(f"{Fore.CYAN}{stats}{Style.RESET_ALL}\n")
 
+    
