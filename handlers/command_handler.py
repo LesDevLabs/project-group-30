@@ -54,7 +54,7 @@ class CommandHandler:
 
         # Обработка телефона с повторным вводом при ошибке
         while True:
-            phone = input("Phone (optional, format: +380XXXXXXXXX): ").strip()
+            phone = input("Phone (optional, format: 380XXXXXXXXX): ").strip()
             if not phone:
                 break  # Пропускаем если пусто
             try:
@@ -199,7 +199,7 @@ class CommandHandler:
                 return None
             if add_new == "y":
                 while True:
-                    new_phone = input("Enter new phone (format: +380XXXXXXXXX): ").strip()
+                    new_phone = input("Enter new phone (format: 380XXXXXXXXX): ").strip()
                     # Allow Enter to cancel
                     if not new_phone:
                         return None
@@ -410,7 +410,6 @@ class CommandHandler:
         record = self.repository.find_contact(name)
         if record is None:
             raise KeyError(f"Contact {name} not found.")
-        print("Let's delete contact name. Please enter contact name")
         response = input("Do you really want to remove contact? (y/n): ").strip()
         if response == "y":
             self.repository.delete_contact(name)
@@ -431,6 +430,8 @@ class CommandHandler:
         record = self.repository.find_contact(name)
         if not record:
             raise KeyError(f"Contact {name} not found.")
+
+        print(f"{record} \n")
 
         while True:
             phone = input("Phone(required): ").strip()
