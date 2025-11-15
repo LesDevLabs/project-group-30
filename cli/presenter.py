@@ -166,6 +166,7 @@ class Presenter:
             ["note-del, nd", "Delete note"],
             ["note-list, nl", "List note(s)"],
             ["note-edit, ne", "Edit note"],
+            ["tag", "Show notes sorted by tags"],
             ["help", "Show help"],
             ["exit", "Exit application"],
         ]

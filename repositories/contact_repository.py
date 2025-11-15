@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from models.contact import Record
 from models.note import Note
 
@@ -108,3 +110,35 @@ class ContactRepository:
             note.tags = new_tags
 
         return self.format_notes(note, ' Note updated:')
+
+    def notes_by_tags(self, notes=None):
+        if not notes:
+            notes = self.notes
+
+        tag_map = defaultdict(list)
+        no_tag_notes = []
+
+        for note in notes:
+            if note.tags:
+                for tag in note.tags:
+                    tag_map[tag].append(note)
+            else:
+                no_tag_notes.append(note)
+
+        output_lines = []
+
+        for tag in sorted(tag_map.keys()):
+            output_lines.append(f"Tag: {tag}")
+            for note in tag_map[tag]:
+                output_lines.append(f"  {note}")
+            output_lines.append("")  # пустая строка между тегами
+
+        if no_tag_notes:
+            output_lines.append("No tags:")
+            for note in no_tag_notes:
+                output_lines.append(f"  {note}")
+
+        if output_lines:
+            return "\n".join(output_lines)
+
+        return "No notes to show."

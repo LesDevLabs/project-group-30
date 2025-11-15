@@ -25,6 +25,7 @@ class CommandHandler:
             "nl": self.note_list,
             "ne": self.note_edit,
             "n-edit": self.note_edit,
+            "tag": self.tag,
             "search-contacts": self.search_contacts,
             "birthdays": self.show_birthdays,
             "help": self._handle_help,
@@ -615,6 +616,10 @@ class CommandHandler:
             tags = [t.strip() for t in tags.split(",") if t.strip()]
 
         return self.repository.edit_note(note_to_edit, new_text, tags)
+
+    @input_error
+    def tag(self):
+        return self.repository.notes_by_tags()
 
     def _handle_help(self):
         header = Presenter.header("Available Commands:")
