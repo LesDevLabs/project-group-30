@@ -18,8 +18,8 @@ WEEKEND_NAMES = {5: "Saturday", 6: "Sunday"}
 class JubileeType(Enum):
     """Enum for jubilee types."""
     NONE = ""
-    REGULAR = "юбилей"
-    BIG = "большой юбилей"
+    REGULAR = "jubilee"
+    BIG = "big jubilee"
 
 
 @dataclass
