@@ -476,7 +476,7 @@ class CommandHandler:
     @input_error
     def search_contacts(self) -> str:
         while True:
-            query = input("Query string(required): ").strip()
+            query = input(Presenter.highlight("Query string(required): ")).strip()
             if not query:
                 print("Query is required. Please enter a search value.\n")
                 continue
