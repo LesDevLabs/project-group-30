@@ -1,4 +1,5 @@
 from models.contact import Record
+from models.note import Note
 
 from search.search_service import SearchService
 
@@ -41,7 +42,7 @@ class ContactRepository:
     # --- Notes ---
     def add_note(self, note):
         self.notes.append(note)
-        return f"Note {note.text} added"
+        return self.format_notes(note, " Note added:")
 
     def del_note(self, note):
         if note not in self.notes:
@@ -56,7 +57,6 @@ class ContactRepository:
     def find_note(self, query):
         query = query.lower().strip()
 
-        # Find first note matching query in text or tags
         for note in self.notes:
             if query in note.text.lower() or any(query in tag.lower() for tag in note.tags):
                 return note
@@ -75,15 +75,23 @@ class ContactRepository:
 
         return results
 
-    def format_notes(self, notes):
-        if not notes:
+    def format_notes(self, notes, header=""):
+        if notes is None or (isinstance(notes, list) and not notes):
             return "No notes to show."
 
-        lines = ["📘 Notes:"]
-        for i, n in enumerate(notes, start=1):
-            tags = ", ".join(n.tags) if n.tags else "none"
-            lines.append(f"{i}. {n.text}")
-            # lines.append(f"{i}. {n.text}  [tags: {tags}]")
+        if isinstance(notes, Note):
+            notes = [notes]
+
+        lines = []
+
+        if header:
+            lines.append(header)
+
+        if len(notes) == 1:
+            lines.append(str(notes[0]))
+        else:
+            for i, note in enumerate(notes, start=1):
+                lines.append(f"{i}. {str(note)}")
 
         return "\n".join(lines)
 
@@ -98,4 +106,3 @@ class ContactRepository:
             note.tags = new_tags
 
         return f"Note {note.text} updated"
-        # return f"Note updated: {note.text} [tags: {', '.join(note.tags) if note.tags else 'none'}]"

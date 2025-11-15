@@ -511,11 +511,22 @@ class CommandHandler:
         return "\n".join(lines)
 
     @input_error
-    def note_add(self, text=None):
+    def note_add(self, text=None, tags=None):
         while not text:
             text = input("Enter text: ").strip()
 
-        note = Note(text)
+        if tags is None:
+            raw = input("Enter tags (comma-separated, optional): ").strip()
+            if raw:
+                tags = [t.strip() for t in raw.split(",") if t.strip()]
+            else:
+                tags = []
+        else:
+            if isinstance(tags, str):
+                tags = [t.strip() for t in tags.split(",") if t.strip()]
+
+        note = Note(text, tags)
+
         return self.repository.add_note(note)
 
     @input_error
